@@ -417,16 +417,16 @@ button.row:active { background: var(--fill); }
 
 /* the pass: thicker, glossy, tilts in 3D */
 .pass { border-radius: 32px; transition: transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .6s;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 -2px 0 rgba(0,0,0,.18), 0 2px 3px rgba(10,40,120,.2), 0 16px 24px -12px rgba(10,40,120,.45), 0 40px 60px -30px rgba(10,80,220,.65); will-change: transform; }
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 -2px 0 rgba(0,0,0,.18), 0 2px 3px rgba(10,40,120,.2), 0 16px 24px -12px rgba(10,40,120,.45), 0 40px 60px -30px rgba(10,80,220,.65); }
 .pass.tilting { transition: transform .08s linear; }
 .pass:active { transform: none; }
-.pass .glare { position: absolute; inset: 0; pointer-events: none; z-index: 2; mix-blend-mode: soft-light;
-  background: radial-gradient(70% 55% at var(--gx) var(--gy), rgba(255,255,255,.85), rgba(255,255,255,0) 60%);
+.pass .glare { position: absolute; inset: 0; pointer-events: none; z-index: 2; 
+  background: radial-gradient(70% 55% at var(--gx) var(--gy), rgba(255,255,255,.22), rgba(255,255,255,0) 60%);
   animation: sheen 7s ease-in-out infinite alternate; }
 .pass.tilting .glare { animation: none; }
 @keyframes sheen { 0% { --gx: 5%; --gy: 0%; } 100% { --gx: 95%; --gy: 30%; } }
 .qr-panel { border-radius: 24px; box-shadow: inset 0 -1px 0 rgba(0,0,0,.06), 0 1px 0 rgba(255,255,255,.6), 0 12px 24px -10px rgba(0,10,40,.55); }
-.wordmark .wm-mark, .plan-chip { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 0 0 .5px rgba(255,255,255,.35); }
+.wordmark .wm-mark, .plan-chip { box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 0 0 .5px rgba(255,255,255,.35); }
 
 /* add to wallet */
 .wallet-row { margin: 16px 16px 0; }
@@ -583,7 +583,26 @@ button.row:active { background: var(--fill); }
 /* Safari drops border-radius clipping while a card is 3D-tilted; clip-path keeps the corners round */
 .pass canvas.drops, .pass .glare { border-radius: 32px; clip-path: inset(0 round 32px); -webkit-clip-path: inset(0 round 32px); }
 .hero-pass .glare { border-radius: 28px; clip-path: inset(0 round 28px); -webkit-clip-path: inset(0 round 28px); }
-.pass, .hero-pass { isolation: isolate; -webkit-transform: translateZ(0); }
+
+
+/* Appearance picker */
+.appear { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 18px 12px 16px; }
+.ap-opt { display: grid; justify-items: center; gap: 9px; font-size: 14px; font-weight: 500; color: var(--label); padding: 4px 0; border-radius: 14px; }
+.ap-thumb { width: 66px; height: 124px; border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 0 0 1px var(--sep), 0 6px 14px -6px rgba(0,0,0,.35); transition: box-shadow .2s, transform .2s; }
+.ap-opt[aria-checked="true"] .ap-thumb { box-shadow: 0 0 0 2.5px var(--accent), 0 6px 14px -6px rgba(0,0,0,.35); transform: translateY(-2px); }
+.ap-screen { position: absolute; inset: 0; padding: 12px 7px 0; display: grid; align-content: start; gap: 5px; }
+.ap-screen.light { background: #F2F2F7; } .ap-screen.dark { background: #000; }
+.ap-screen i { display: block; border-radius: 4px; }
+.ap-screen .t1 { height: 5px; width: 60%; border-radius: 3px; }
+.ap-screen .card { height: 40px; border-radius: 7px; background: linear-gradient(150deg, #142C4E, #0B5A96 55%, #16ACE1); }
+.ap-screen .row { height: 12px; }
+.ap-screen .bar { position: absolute; left: 7px; right: 7px; bottom: 6px; height: 12px; border-radius: 99px; }
+.ap-screen.light .t1 { background: #1c1c1e; } .ap-screen.light .row { background: #fff; } .ap-screen.light .bar { background: rgba(255,255,255,.9); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.ap-screen.dark .t1 { background: #f2f2f7; } .ap-screen.dark .row { background: #1c1c1e; } .ap-screen.dark .bar { background: rgba(60,60,66,.9); }
+.ap-screen.half { clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+.ap-radio { width: 22px; height: 22px; border-radius: 11px; box-shadow: inset 0 0 0 1.5px var(--label3); display: grid; place-items: center; color: #fff; }
+.ap-opt[aria-checked="true"] .ap-radio { background: var(--accent); box-shadow: none; }
+.ap-radio svg { opacity: 0; } .ap-opt[aria-checked="true"] .ap-radio svg { opacity: 1; }
 </style>
 
 <div class="stage">
@@ -731,6 +750,16 @@ button.row:active { background: var(--fill); }
             <button class="row icon-row" data-toast="Receipts"><span class="ico" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">Receipts</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
           </div>
 
+          <div class="cap">Appearance</div>
+          <div class="group">
+            <div class="appear" role="radiogroup" aria-label="Appearance">
+              <button class="ap-opt" role="radio" data-theme-set="light" aria-checked="false"><span class="ap-thumb"><span class="ap-screen light"><i class="t1"></i><i class="card"></i><i class="row"></i><i class="row"></i><i class="bar"></i></span></span>Light<span class="ap-radio"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button>
+              <button class="ap-opt" role="radio" data-theme-set="dark" aria-checked="false"><span class="ap-thumb"><span class="ap-screen dark"><i class="t1"></i><i class="card"></i><i class="row"></i><i class="row"></i><i class="bar"></i></span></span>Dark<span class="ap-radio"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button>
+              <button class="ap-opt" role="radio" data-theme-set="auto" aria-checked="true"><span class="ap-thumb"><span class="ap-screen light"><i class="t1"></i><i class="card"></i><i class="row"></i><i class="row"></i><i class="bar"></i></span><span class="ap-screen dark half"><i class="t1"></i><i class="card"></i><i class="row"></i><i class="row"></i><i class="bar"></i></span></span>Automatic<span class="ap-radio"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button>
+            </div>
+          </div>
+          <div class="foot">Automatic matches your phone's setting.</div>
+
           <div class="cap">Notifications</div>
           <div class="group">
             <div class="row icon-row"><span class="ico" style="background:#FF3B30"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0Z"/></svg></span><span class="r-main"><div class="r-title">Wash reminders</div><div class="r-sub">After rain or salt days</div></span><button class="switch" role="switch" aria-checked="true" aria-label="Wash reminders"></button></div>
@@ -743,6 +772,9 @@ button.row:active { background: var(--fill); }
             <button class="row icon-row" data-sheet="help-call"><span class="ico" style="background:#30B0C7"><svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 3.5 9 3l1.8 4.3-2 1.6a11 11 0 0 0 6.3 6.3l1.6-2L21 15l-.5 2.4A2 2 0 0 1 18.6 19 15.6 15.6 0 0 1 5 5.4a2 2 0 0 1 1.6-1.9Z"/></svg></span><span class="r-main"><div class="r-title">Call support</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
             <button class="row icon-row" data-sheet="howto"><span class="ico" style="background:#5856D6"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l10-6.5Z"/></svg></span><span class="r-main"><div class="r-title">How your pass works</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
           </div>
+
+          <div class="cap">Demo</div>
+          <div class="group"><button class="row icon-row" id="previewSignup"><span class="ico" style="background:#0A84FF"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5Z"/></svg></span><span class="r-main"><div class="r-title">Preview sign-up screens</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button></div>
 
           <div class="group" style="margin-top:28px"><button class="row signout" data-sheet="signout">Sign Out</button></div>
           <div class="version">Version 3.0 · Concept</div>
@@ -1248,6 +1280,7 @@ addEventListener("resize", moveLens);
   const card = $("#passCard");
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   card.addEventListener("pointermove", e => {
+    if (e.pointerType !== "mouse") return; // tilt only with a mouse; phones keep the card flat
     const r = card.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
     card.classList.add("tilting");
     card.style.transform = `perspective(900px) rotateX(${(.5 - py) * 12}deg) rotateY(${(px - .5) * 16}deg) scale(1.015)`;
@@ -1256,7 +1289,7 @@ addEventListener("resize", moveLens);
   const reset = () => { card.classList.remove("tilting"); card.style.transform = ""; card.style.removeProperty("--gx"); card.style.removeProperty("--gy"); };
   card.addEventListener("pointerleave", reset); card.addEventListener("pointercancel", reset);
   // a small intro wobble so the depth is obvious on first view
-  setTimeout(() => { card.style.transform = "perspective(900px) rotateX(6deg) rotateY(-9deg)"; setTimeout(() => card.style.transform = "", 650); }, 500);
+  
 })();
 
 /* ---- Wallets ---- */
@@ -1468,7 +1501,21 @@ $("#obFill").onclick = () => {
 };
 
 makeQR($("#qrHero"), 120);
-openOnboard("welcome");
+
+/* ---- Appearance ---- */
+const THEME_KEY = "appearance";
+function applyTheme(mode, save = true) {
+  const root = document.documentElement;
+  if (mode === "light" || mode === "dark") root.setAttribute("data-theme", mode); else root.removeAttribute("data-theme");
+  $$(".ap-opt").forEach(b => b.setAttribute("aria-checked", b.dataset.themeSet === mode));
+  const dark = mode === "dark" || (mode === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  $$('meta[name="theme-color"]').forEach(m => m.setAttribute("content", dark ? "#000000" : "#F2F2F7"));
+  if (save) { try { localStorage.setItem(THEME_KEY, mode); } catch (e) {} }
+}
+$$(".ap-opt").forEach(b => b.addEventListener("click", () => { applyTheme(b.dataset.themeSet); toast(b.dataset.themeSet === "auto" ? "Appearance: Automatic" : b.dataset.themeSet === "dark" ? "Dark mode on" : "Light mode on"); }));
+(function initTheme() { let saved = null; try { saved = localStorage.getItem(THEME_KEY); } catch (e) {} if (saved) applyTheme(saved, false); })();
+$("#previewSignup").onclick = () => openOnboard("welcome");
+
 
 </script>
 
