@@ -1,0 +1,1447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A5BE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Glide">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  [hidden] { display: none !important; }
+  /* Installed on a phone: respect the notch and home indicator. */
+  @media (max-width: 520px), (max-height: 760px) and (max-width: 900px) {
+    .screen { --top-inset: env(safe-area-inset-top, 0px) !important; }
+    .sheet { bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  }
+</style>
+</head>
+<body>
+<title>Glide Wash Pass</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one iPhone screen, iOS grouped lists, a Wallet-style pass as the hero. Framed on desktop, full-bleed on phones. */
+:root {
+  --bg: #F2F2F7;
+  --surface: #FFFFFF;
+  --surface2: #F7F7FA;
+  --label: #0B0B0F;
+  --label2: rgba(60,60,67,.62);
+  --label3: rgba(60,60,67,.36);
+  --sep: rgba(60,60,67,.18);
+  --fill: rgba(120,120,128,.12);
+  --accent: #0A66F5;
+  --accent-soft: rgba(10,102,245,.12);
+  --green: #1FA34A;
+  --green-soft: rgba(52,199,89,.16);
+  --orange: #E07800;
+  --red: #FF3B30;
+  --bar: rgba(249,249,251,.82);
+  --stage: #E3E6EB;
+  --stage-ink: #1B1D22;
+  --stage-ink2: #5C626E;
+  --map-land: #EEF1EC;
+  --map-water: #CFE3F5;
+  --map-road: #FFFFFF;
+  --map-road2: #F6DFA2;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(16,24,40,.08);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-round: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --surface: #1C1C1E; --surface2: #2C2C2E; --label: #FFFFFF;
+    --label2: rgba(235,235,245,.62); --label3: rgba(235,235,245,.32); --sep: rgba(84,84,88,.55);
+    --fill: rgba(120,120,128,.26); --accent: #3B8BFF; --accent-soft: rgba(59,139,255,.2);
+    --green: #32D74B; --green-soft: rgba(50,215,75,.18); --orange: #FF9F0A; --red: #FF453A;
+    --bar: rgba(22,22,24,.8); --stage: #0E0F12; --stage-ink: #F2F3F5; --stage-ink2: #9097A3;
+    --map-land: #1E2124; --map-water: #16314A; --map-road: #3A3D42; --map-road2: #5A4A22;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #1C1C1E; --surface2: #2C2C2E; --label: #FFFFFF;
+  --label2: rgba(235,235,245,.62); --label3: rgba(235,235,245,.32); --sep: rgba(84,84,88,.55);
+  --fill: rgba(120,120,128,.26); --accent: #3B8BFF; --accent-soft: rgba(59,139,255,.2);
+  --green: #32D74B; --green-soft: rgba(50,215,75,.18); --orange: #FF9F0A; --red: #FF453A;
+  --bar: rgba(22,22,24,.8); --stage: #0E0F12; --stage-ink: #F2F3F5; --stage-ink2: #9097A3;
+  --map-land: #1E2124; --map-water: #16314A; --map-road: #3A3D42; --map-road2: #5A4A22;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.4);
+  color-scheme: dark;
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--stage); color: var(--label); font-family: var(--font);
+  -webkit-font-smoothing: antialiased; font-size: 17px; line-height: 1.3;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+*, *::before, *::after { box-sizing: border-box; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+svg { display: block; }
+
+/* ---------- Stage + device ---------- */
+.stage { min-height: 100%; display: flex; align-items: center; justify-content: center; gap: 64px; padding-block: 32px; }
+.pitch { max-width: 300px; color: var(--stage-ink); }
+.pitch .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--stage-ink2); font-weight: 600; }
+.pitch h1 { font-size: 34px; line-height: 1.08; letter-spacing: -.02em; margin: 10px 0 14px; text-wrap: balance; font-weight: 700; }
+.pitch p { color: var(--stage-ink2); font-size: 15px; line-height: 1.5; margin: 0 0 18px; }
+.pitch ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; font-size: 14px; color: var(--stage-ink2); }
+.pitch li { display: flex; gap: 10px; align-items: flex-start; }
+.pitch li b { color: var(--stage-ink); font-weight: 600; }
+.pitch li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 3px; background: var(--accent); margin-top: 7px; }
+
+.device {
+  position: relative; width: 390px; height: 844px; flex: none;
+  border-radius: 58px; padding: 12px; background: #111214;
+  box-shadow: 0 0 0 2px #2b2d31, 0 30px 80px rgba(0,0,0,.28), inset 0 0 0 1px #3a3c40;
+}
+.screen { position: relative; width: 100%; height: 100%; border-radius: 46px; overflow: hidden; background: var(--bg); isolation: isolate; }
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; border-radius: 20px; background: #000; z-index: 60; }
+.statusbar { position: absolute; inset: 0 0 auto; height: 54px; z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 6px 34px 0 44px; font-weight: 600; font-size: 16px; pointer-events: none; }
+.statusbar .sb-right { display: flex; gap: 6px; align-items: center; }
+
+@media (max-width: 760px) { .pitch { display: none; } }
+@media (max-width: 520px), (max-height: 760px) and (max-width: 900px) {
+  body { padding-left: 0; padding-right: 0; }
+  .stage { padding-block: 0; height: 100%; }
+  .device { width: 100%; height: 100%; border-radius: 0; padding: 0; box-shadow: none; background: var(--bg); }
+  .screen { border-radius: 0; }
+  .island, .statusbar { display: none; }
+  .screen { --top-inset: 0px; }
+}
+.screen { --top-inset: 48px; }
+
+/* ---------- Views ---------- */
+.view { position: absolute; inset: 0; display: none; }
+.view.active { display: block; animation: fadeIn .22s ease; }
+@keyframes fadeIn { from { opacity: .4; } to { opacity: 1; } }
+.scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; padding: calc(var(--top-inset) + 44px) 0 112px; scrollbar-width: none; overscroll-behavior: contain; }
+.scroll::-webkit-scrollbar { display: none; }
+
+.navbar { position: absolute; inset: 0 0 auto; z-index: 20; padding-top: var(--top-inset); height: calc(var(--top-inset) + 44px); display: flex; align-items: center; justify-content: center; transition: background .2s, box-shadow .2s; }
+.navbar .nb-title { font-weight: 600; font-size: 17px; opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s; }
+.navbar .nb-action { position: absolute; right: 16px; bottom: 8px; color: var(--accent); font-size: 17px; }
+.navbar.scrolled { background: var(--bar); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 .5px 0 var(--sep); }
+.navbar.scrolled .nb-title { opacity: 1; transform: none; }
+
+.large-title { padding: 2px 20px 8px; }
+.large-title .lt-sub { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--label2); }
+.large-title h2 { margin: 2px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+
+.section-h { display: flex; justify-content: space-between; align-items: baseline; padding: 22px 20px 7px; }
+.section-h h3 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.section-h .link { color: var(--accent); font-size: 15px; }
+.foot { padding: 7px 36px 0; font-size: 13px; color: var(--label2); line-height: 1.4; }
+.cap { padding: 22px 36px 7px; font-size: 13px; text-transform: uppercase; letter-spacing: .02em; color: var(--label2); }
+
+/* Grouped list */
+.group { margin: 0 16px; background: var(--surface); border-radius: 12px; overflow: hidden; }
+.row { width: 100%; display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 48px; text-align: left; position: relative; }
+.row + .row::before { content: ""; position: absolute; top: 0; right: 0; left: var(--inset, 16px); height: .5px; background: var(--sep); }
+.row.icon-row { --inset: 60px; }
+button.row:active { background: var(--fill); }
+.row .r-main { flex: 1; min-width: 0; padding: 11px 0; }
+.row .r-title { font-size: 17px; }
+.row .r-sub { font-size: 14px; color: var(--label2); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .r-val { color: var(--label2); font-size: 17px; white-space: nowrap; }
+.row .chev { color: var(--label3); flex: none; }
+.ico { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; color: #fff; flex: none; }
+.ico svg { width: 18px; height: 18px; }
+
+/* ---------- Pass ---------- */
+.pass {
+  margin: 8px 16px 0; border-radius: 22px; color: #fff; position: relative; overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 100% 0%, rgba(120,230,255,.45), transparent 55%),
+    radial-gradient(90% 60% at 0% 100%, rgba(0,20,80,.55), transparent 60%),
+    linear-gradient(150deg, #0A2F7A 0%, #0A5BE0 55%, #13A6D6 100%);
+  box-shadow: 0 18px 40px -12px rgba(10,60,180,.55), 0 2px 6px rgba(0,0,0,.12);
+  width: calc(100% - 32px); text-align: left; display: block;
+  transition: transform .18s ease;
+}
+.pass:active { transform: scale(.985); }
+.pass canvas.drops { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5; pointer-events: none; }
+.pass .p-inner { position: relative; padding: 18px 20px 20px; display: grid; gap: 16px; }
+.pass .p-top { display: flex; justify-content: space-between; align-items: center; }
+.wordmark { display: flex; align-items: center; gap: 8px; font-family: var(--font-round); font-weight: 700; font-size: 20px; letter-spacing: -.01em; }
+.wordmark .wm-mark { width: 28px; height: 28px; border-radius: 9px; background: rgba(255,255,255,.18); display: grid; place-items: center; box-shadow: inset 0 0 0 .5px rgba(255,255,255,.35); }
+.plan-chip { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 5px 10px; border-radius: 99px; background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.35); }
+.qr-panel { background: #fff; color: #000; border-radius: 16px; padding: 16px; display: grid; justify-items: center; gap: 10px; }
+.qr-box { width: 168px; height: 168px; display: grid; place-items: center; }
+.qr-box img, .qr-box canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+.member-no { font-family: var(--mono); font-size: 17px; letter-spacing: .18em; font-variant-numeric: tabular-nums; }
+.qr-hint { font-size: 12px; color: #6b7280; display: flex; gap: 5px; align-items: center; }
+.pass .p-fields { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; }
+.pass .f-l { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; opacity: .7; font-weight: 600; }
+.pass .f-v { font-size: 17px; font-weight: 600; }
+.pass .f-r { text-align: right; }
+
+.status-line { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px 0; font-size: 14px; color: var(--label2); }
+.dot { width: 8px; height: 8px; border-radius: 4px; background: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 16px; }
+.tile { background: var(--surface); border-radius: 14px; padding: 14px 14px 13px; display: grid; gap: 4px; text-align: left; }
+.tile .t-l { font-size: 13px; color: var(--label2); font-weight: 500; }
+.tile .t-v { font-family: var(--font-round); font-size: 28px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.tile .t-v small { font-size: 15px; color: var(--label2); font-weight: 600; margin-left: 2px; }
+.tile .t-s { font-size: 13px; color: var(--label2); }
+
+.wash-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; flex: none; }
+.wash-ico svg { width: 20px; height: 20px; }
+
+/* ---------- Locations ---------- */
+.search { margin: 4px 16px 12px; display: flex; align-items: center; gap: 6px; background: var(--fill); border-radius: 10px; padding: 0 10px; height: 36px; color: var(--label2); }
+.search input { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 17px; color: var(--label); outline: none; }
+.search input::placeholder { color: var(--label2); }
+.map { margin: 0 16px; height: 190px; border-radius: 14px; overflow: hidden; position: relative; background: var(--map-land); }
+.map canvas { width: 100%; height: 100%; }
+.map .pin { position: absolute; transform: translate(-50%, -100%); display: grid; justify-items: center; gap: 2px; }
+.map .pin .pb { width: 30px; height: 30px; border-radius: 15px 15px 15px 4px; transform: rotate(-45deg); background: var(--accent); display: grid; place-items: center; box-shadow: 0 3px 8px rgba(0,0,0,.25); border: 2px solid #fff; }
+.map .pin .pb svg { transform: rotate(45deg); width: 14px; height: 14px; color: #fff; }
+.map .pin.home .pb { background: #0A2F7A; }
+.map .me { position: absolute; width: 16px; height: 16px; border-radius: 8px; background: #0A84FF; border: 3px solid #fff; box-shadow: 0 0 0 0 rgba(10,132,255,.5); transform: translate(-50%,-50%); animation: ping 2s infinite; }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(10,132,255,.45); } 80%,100% { box-shadow: 0 0 0 18px rgba(10,132,255,0); } }
+.seg { margin: 14px 16px 0; display: grid; grid-template-columns: 1fr 1fr; background: var(--fill); border-radius: 9px; padding: 2px; }
+.seg button { height: 30px; border-radius: 7px; font-size: 14px; font-weight: 500; }
+.seg button[aria-pressed="true"] { background: var(--surface); box-shadow: 0 2px 6px rgba(0,0,0,.12); font-weight: 600; }
+.loc .r-title { font-weight: 600; }
+.loc .r-meta { display: flex; gap: 8px; align-items: center; margin-top: 5px; font-size: 13px; color: var(--label2); flex-wrap: wrap; }
+.pill { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+.pill.open { color: var(--green); background: var(--green-soft); }
+.pill.busy { color: var(--orange); background: color-mix(in srgb, var(--orange) 16%, transparent); }
+.pill.closed { color: var(--label2); background: var(--fill); }
+.dist { font-variant-numeric: tabular-nums; color: var(--label2); font-size: 15px; white-space: nowrap; }
+
+/* ---------- Membership ---------- */
+.plan-card { margin: 8px 16px 0; background: var(--surface); border-radius: 18px; padding: 18px; display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+.ring { position: relative; width: 92px; height: 92px; }
+.ring svg { width: 92px; height: 92px; transform: rotate(-90deg); }
+.ring .rc { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.ring .rc b { font-family: var(--font-round); font-size: 26px; line-height: 1; }
+.ring .rc span { font-size: 11px; color: var(--label2); margin-top: 3px; }
+.plan-card h4 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
+.plan-card p { margin: 4px 0 0; color: var(--label2); font-size: 14px; line-height: 1.4; }
+.tiers { display: grid; gap: 12px; margin: 0 16px; }
+.tier { background: var(--surface); border-radius: 16px; padding: 16px; display: grid; gap: 10px; position: relative; box-shadow: inset 0 0 0 1.5px transparent; }
+.tier.current { box-shadow: inset 0 0 0 2px var(--accent); }
+.tier .th { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.tier .tn { font-weight: 700; font-size: 18px; }
+.tier .tp { font-family: var(--font-round); font-weight: 700; font-size: 22px; font-variant-numeric: tabular-nums; }
+.tier .tp small { font-size: 13px; color: var(--label2); font-weight: 500; font-family: var(--font); }
+.tier ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; color: var(--label2); }
+.tier li { display: flex; gap: 8px; align-items: center; }
+.tier li svg { color: var(--green); flex: none; }
+.tier li.no { color: var(--label3); }
+.tier li.no svg { color: var(--label3); }
+.btn { height: 44px; border-radius: 12px; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.tinted { background: var(--accent-soft); color: var(--accent); }
+.btn.plain { background: var(--fill); color: var(--label); }
+.btn:active { opacity: .7; }
+.badge-cur { font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 3px 8px; border-radius: 99px; }
+
+/* ---------- Account ---------- */
+.profile { display: grid; justify-items: center; gap: 4px; padding: 6px 20px 8px; text-align: center; }
+.avatar { width: 84px; height: 84px; border-radius: 42px; display: grid; place-items: center; font-family: var(--font-round); font-weight: 700; font-size: 32px; color: #fff; background: linear-gradient(160deg, #9AA5B8, #6B778C); margin-bottom: 6px; }
+.profile .pn { font-size: 22px; font-weight: 700; }
+.profile .pe { font-size: 15px; color: var(--label2); }
+.plate { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: .06em; padding: 3px 7px; border-radius: 5px; border: 1.5px solid var(--label3); color: var(--label); }
+.switch { width: 51px; height: 31px; border-radius: 16px; background: var(--fill); position: relative; flex: none; transition: background .2s; }
+.switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.15), 0 1px 1px rgba(0,0,0,.16); transition: transform .22s cubic-bezier(.3,.7,.4,1); }
+.switch[aria-checked="true"] { background: #34C759; }
+.switch[aria-checked="true"]::after { transform: translateX(20px); }
+.signout { color: var(--red); justify-content: center; font-size: 17px; }
+.version { text-align: center; color: var(--label3); font-size: 13px; padding: 18px 0 0; }
+
+/* ---------- Tab bar ---------- */
+.tabbar { position: absolute; inset: auto 0 0; z-index: 40; display: grid; grid-template-columns: repeat(4, 1fr); padding: 7px 8px calc(26px + env(safe-area-inset-bottom, 0px)); background: var(--bar); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 -.5px 0 var(--sep); }
+.tabbar button { display: grid; justify-items: center; gap: 3px; color: var(--label3); font-size: 10px; font-weight: 600; padding-top: 2px; }
+.tabbar button svg { width: 26px; height: 26px; }
+.tabbar button[aria-selected="true"] { color: var(--accent); }
+@media (max-width: 520px), (max-height: 760px) and (max-width: 900px) { .tabbar { padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); } }
+
+/* ---------- Sheet ---------- */
+.sheet-wrap { position: absolute; inset: 0; z-index: 80; pointer-events: none; }
+.sheet-wrap .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.35); opacity: 0; transition: opacity .25s; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: calc(100% - var(--top-inset) - 10px); background: var(--bg); border-radius: 14px 14px 0 0; transform: translateY(105%); transition: transform .35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; }
+.sheet-wrap.open { pointer-events: auto; }
+.sheet-wrap.open .backdrop { opacity: 1; }
+.sheet-wrap.open .sheet { transform: none; }
+.sheet .grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--label3); margin: 6px auto 0; flex: none; }
+.sheet .sh-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 6px; flex: none; }
+.sheet .sh-head h3 { margin: 0; font-size: 17px; font-weight: 600; }
+.sheet .sh-close { width: 30px; height: 30px; border-radius: 15px; background: var(--fill); color: var(--label2); display: grid; place-items: center; }
+.sheet .sh-body { overflow-y: auto; padding: 4px 0 calc(28px + env(safe-area-inset-bottom, 0px)); }
+.sheet.bright { background: #fff; color: #000; }
+.sheet.bright .sh-close { background: #eee; color: #555; }
+.big-qr { display: grid; justify-items: center; gap: 14px; padding: 8px 20px 10px; text-align: center; }
+.big-qr .qr-box { width: 240px; height: 240px; }
+.big-qr p { margin: 0; color: #6b7280; font-size: 15px; max-width: 280px; line-height: 1.4; }
+.loc-hero { padding: 0 20px 12px; }
+.loc-hero h2 { margin: 0; font-size: 26px; letter-spacing: -.01em; }
+.loc-hero .lh-sub { color: var(--label2); font-size: 15px; margin-top: 4px; }
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 4px 16px 0; }
+.actions a, .actions button { background: var(--surface); border-radius: 12px; padding: 10px 4px 9px; display: grid; justify-items: center; gap: 4px; color: var(--accent); font-size: 12px; font-weight: 600; text-decoration: none; }
+.actions svg { width: 22px; height: 22px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 16px; }
+.chip { background: var(--surface); border-radius: 99px; padding: 7px 12px; font-size: 14px; display: flex; gap: 6px; align-items: center; }
+.chip svg { width: 15px; height: 15px; color: var(--accent); }
+.hours .row { min-height: 40px; }
+.hours .today .r-title, .hours .today .r-val { font-weight: 600; color: var(--label); }
+.field { width: 100%; display: grid; gap: 2px; padding: 9px 16px; position: relative; }
+.field + .field::before { content: ""; position: absolute; top: 0; right: 0; left: 16px; height: .5px; background: var(--sep); }
+.field label { font-size: 12px; color: var(--label2); }
+.field input { border: 0; background: transparent; font: inherit; font-size: 17px; color: var(--label); outline: none; padding: 2px 0; }
+.sheet-cta { margin: 20px 16px 0; display: grid; gap: 10px; }
+.confirm-hero { text-align: center; padding: 6px 28px 4px; }
+.confirm-hero .ch-ico { width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 12px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.confirm-hero h2 { margin: 0 0 6px; font-size: 24px; letter-spacing: -.01em; }
+.confirm-hero p { margin: 0; color: var(--label2); font-size: 15px; line-height: 1.45; }
+
+/* ---------- Toast ---------- */
+.toast { position: absolute; left: 50%; top: calc(var(--top-inset) + 6px); z-index: 90; transform: translate(-50%, -140%); background: var(--surface); color: var(--label); border-radius: 99px; padding: 10px 18px 10px 12px; display: flex; gap: 8px; align-items: center; font-size: 15px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.18), 0 0 0 .5px var(--sep); transition: transform .4s cubic-bezier(.2,.9,.25,1.1), opacity .25s; white-space: nowrap; opacity: 0; pointer-events: none; }
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+.toast svg { color: var(--green); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+}
+
+/* ================= Liquid glass layer ================= */
+@property --gx { syntax: '<percentage>'; inherits: true; initial-value: 30%; }
+@property --gy { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+:root {
+  --glass: rgba(255,255,255,.55); --glass-strong: rgba(250,250,253,.86);
+  --glass-edge: rgba(255,255,255,.85); --glass-shade: rgba(0,0,0,.05);
+  --rim-a: 1; --hi: rgba(255,255,255,.95);
+  --amb1: rgba(64,150,255,.26); --amb2: rgba(32,201,213,.2); --amb3: rgba(150,120,255,.14);
+  --card-shadow: 0 1px 1px rgba(16,24,40,.04), 0 6px 14px -4px rgba(16,24,40,.08), 0 22px 40px -22px rgba(16,24,40,.22);
+  --float-shadow: 0 18px 40px -12px rgba(16,24,40,.28), 0 4px 10px -4px rgba(16,24,40,.12);
+  --wallet-bg: #0B0B0F; --wallet-fg: #FFFFFF;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --glass: rgba(44,44,50,.48); --glass-strong: rgba(30,30,34,.86); --glass-edge: rgba(255,255,255,.16); --glass-shade: rgba(0,0,0,.35);
+    --rim-a: .35; --hi: rgba(255,255,255,.07);
+    --amb1: rgba(40,110,255,.3); --amb2: rgba(0,170,190,.2); --amb3: rgba(120,80,255,.18);
+    --card-shadow: 0 1px 1px rgba(0,0,0,.4), 0 14px 30px -14px rgba(0,0,0,.7);
+    --float-shadow: 0 18px 40px -10px rgba(0,0,0,.7), 0 4px 10px -4px rgba(0,0,0,.5);
+    --wallet-bg: #F5F5F7; --wallet-fg: #0B0B0F;
+  }
+}
+:root[data-theme="dark"] {
+  --glass: rgba(44,44,50,.48); --glass-strong: rgba(30,30,34,.86); --glass-edge: rgba(255,255,255,.16); --glass-shade: rgba(0,0,0,.35);
+  --rim-a: .35; --hi: rgba(255,255,255,.07);
+  --amb1: rgba(40,110,255,.3); --amb2: rgba(0,170,190,.2); --amb3: rgba(120,80,255,.18);
+  --card-shadow: 0 1px 1px rgba(0,0,0,.4), 0 14px 30px -14px rgba(0,0,0,.7);
+  --float-shadow: 0 18px 40px -10px rgba(0,0,0,.7), 0 4px 10px -4px rgba(0,0,0,.5);
+  --wallet-bg: #F5F5F7; --wallet-fg: #0B0B0F;
+}
+
+.screen {
+  background:
+    radial-gradient(60% 32% at 10% 0%, var(--amb1), transparent 70%),
+    radial-gradient(55% 30% at 100% 14%, var(--amb2), transparent 70%),
+    radial-gradient(80% 40% at 50% 105%, var(--amb3), transparent 70%),
+    var(--bg);
+}
+.device { border-radius: 62px; }
+.screen { border-radius: 50px; }
+
+/* glass material */
+.glass, .tabbar, .toast, .seg, .search, .sh-close {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(24px) saturate(190%); backdrop-filter: blur(24px) saturate(190%);
+  box-shadow: inset 0 1px 0 var(--glass-edge), inset 0 -1px 0 var(--glass-shade), inset 0 0 0 .5px var(--glass-edge);
+}
+/* specular rim: a bright edge that catches light at top-left and bottom-right */
+.rim::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.2px; pointer-events: none; z-index: 3; opacity: var(--rim-a);
+  background: linear-gradient(150deg, rgba(255,255,255,.95), rgba(255,255,255,.15) 30%, rgba(255,255,255,0) 55%, rgba(255,255,255,.55) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+/* nav bar: frosted fade instead of a hard bar */
+.navbar.scrolled { background: var(--glass-strong); box-shadow: none;
+  -webkit-mask-image: linear-gradient(#000 65%, transparent); mask-image: linear-gradient(#000 65%, transparent); height: calc(var(--top-inset) + 58px); padding-bottom: 14px; }
+.navbar .nb-title { padding-top: 0; }
+
+/* floating glass tab bar with a sliding lens */
+.tabbar { inset: auto 14px 22px; padding: 6px; border-radius: 34px; gap: 0; box-shadow: inset 0 1px 0 var(--glass-edge), inset 0 -1px 0 var(--glass-shade), var(--float-shadow); }
+.tabbar button { position: relative; z-index: 1; height: 54px; border-radius: 28px; align-content: center; padding-top: 0; transition: color .25s, transform .25s; }
+.tabbar button:active { transform: scale(.92); }
+.tabbar .lens { position: absolute; top: 6px; left: 6px; height: 54px; width: 80px; border-radius: 28px; z-index: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12)), var(--accent-soft);
+  box-shadow: inset 0 1px 0 var(--glass-edge), inset 0 0 0 .5px var(--glass-edge), 0 4px 12px -4px rgba(0,0,0,.18);
+  transition: left .5s cubic-bezier(.3,1.35,.5,1), width .5s cubic-bezier(.3,1.35,.5,1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tabbar .lens { background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.03)), var(--accent-soft); } }
+:root[data-theme="dark"] .tabbar .lens { background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.03)), var(--accent-soft); }
+@media (max-width: 520px), (max-height: 760px) and (max-width: 900px) { .tabbar { padding: 6px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); } }
+.scroll { padding-bottom: 130px; }
+
+/* rounder, deeper surfaces */
+.group { border-radius: 24px; box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); }
+.tile { border-radius: 24px; padding: 16px 16px 15px; box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); }
+.plan-card { border-radius: 28px; box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); }
+.tier { border-radius: 26px; padding: 18px; box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); }
+.tier.current { box-shadow: inset 0 0 0 2px var(--accent), var(--card-shadow); }
+.map { border-radius: 26px; box-shadow: inset 0 0 0 .5px var(--sep), var(--card-shadow); }
+.actions a, .actions button { border-radius: 20px; box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); }
+.chip { box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); }
+.search { border-radius: 99px; height: 42px; padding: 0 14px; }
+.seg { border-radius: 99px; padding: 3px; }
+.seg button { border-radius: 99px; height: 32px; }
+.seg button[aria-pressed="true"] { box-shadow: inset 0 1px 0 var(--hi), 0 3px 10px -2px rgba(0,0,0,.18); }
+.ico { border-radius: 9px; position: relative; overflow: hidden; box-shadow: 0 2px 5px -1px rgba(0,0,0,.25); }
+.ico::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,255,255,0) 55%); pointer-events: none; }
+.wash-ico { border-radius: 13px; box-shadow: inset 0 1px 0 var(--hi); }
+.avatar { box-shadow: inset 0 2px 1px rgba(255,255,255,.4), inset 0 -6px 12px rgba(0,0,0,.18), 0 12px 24px -10px rgba(40,50,70,.55); }
+.btn { border-radius: 99px; height: 50px; }
+.btn.primary { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 78%, #fff), var(--accent) 60%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -2px 4px rgba(0,0,0,.12), 0 10px 20px -10px var(--accent); }
+.btn.tinted, .btn.plain { box-shadow: inset 0 1px 0 var(--hi); }
+.btn:active { transform: scale(.97); opacity: .85; }
+
+/* the pass: thicker, glossy, tilts in 3D */
+.pass { border-radius: 32px; transition: transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .6s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 -2px 0 rgba(0,0,0,.18), 0 2px 3px rgba(10,40,120,.2), 0 16px 24px -12px rgba(10,40,120,.45), 0 40px 60px -30px rgba(10,80,220,.65); will-change: transform; }
+.pass.tilting { transition: transform .08s linear; }
+.pass:active { transform: none; }
+.pass .glare { position: absolute; inset: 0; pointer-events: none; z-index: 2; mix-blend-mode: soft-light;
+  background: radial-gradient(70% 55% at var(--gx) var(--gy), rgba(255,255,255,.85), rgba(255,255,255,0) 60%);
+  animation: sheen 7s ease-in-out infinite alternate; }
+.pass.tilting .glare { animation: none; }
+@keyframes sheen { 0% { --gx: 5%; --gy: 0%; } 100% { --gx: 95%; --gy: 30%; } }
+.qr-panel { border-radius: 24px; box-shadow: inset 0 -1px 0 rgba(0,0,0,.06), 0 1px 0 rgba(255,255,255,.6), 0 12px 24px -10px rgba(0,10,40,.55); }
+.wordmark .wm-mark, .plan-chip { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 0 0 .5px rgba(255,255,255,.35); }
+
+/* add to wallet */
+.wallet-row { margin: 16px 16px 0; }
+.wallet-btn { width: 100%; height: 54px; border-radius: 99px; background: var(--wallet-bg); color: var(--wallet-fg); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: 17px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -2px 4px rgba(0,0,0,.25), 0 12px 24px -12px rgba(0,0,0,.55); transition: transform .2s; }
+.wallet-btn:active { transform: scale(.97); }
+.wallet-btn small { font-weight: 500; opacity: .6; font-size: 13px; }
+.wallet-glyph { width: 30px; height: 22px; flex: none; }
+.in-wallet { color: var(--green); font-weight: 600; }
+
+.wpass { margin: 4px auto 0; width: calc(100% - 64px); max-width: 320px; border-radius: 20px; color: #fff; padding: 14px 16px 16px; display: grid; gap: 12px;
+  background: radial-gradient(120% 70% at 100% 0%, rgba(120,230,255,.4), transparent 55%), linear-gradient(160deg, #0A2F7A, #0A5BE0 60%, #13A6D6);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 24px 40px -20px rgba(10,60,180,.7); transform-origin: 50% 100%; }
+.wpass.drop { animation: drop .9s cubic-bezier(.5,0,.3,1) forwards; }
+@keyframes drop { 0% { transform: none; } 30% { transform: translateY(-10px) rotateX(8deg); } 100% { transform: translateY(140px) scale(.6); opacity: 0; } }
+.wpass .wp-top { display: flex; justify-content: space-between; align-items: center; }
+.wpass .wp-f { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.wpass .wp-l { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .72; font-weight: 600; }
+.wpass .wp-v { font-size: 16px; font-weight: 600; }
+.wpass .wp-qr { background: #fff; color: #000; border-radius: 14px; padding: 10px; justify-self: center; display: grid; justify-items: center; gap: 4px; }
+.wpass .wp-qr .qr-box { width: 112px; height: 112px; }
+.wpass .wp-qr .member-no { font-size: 12px; }
+.wallet-opt .ico { width: 40px; height: 40px; border-radius: 11px; }
+.wallet-opt .ico svg { width: 24px; height: 24px; }
+.add-pill { height: 32px; padding: 0 16px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: inset 0 1px 0 var(--hi); flex: none; }
+.add-pill.done { background: var(--green-soft); color: var(--green); }
+.here { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-left: 6px; }
+
+/* floating sheet */
+.sheet { left: 8px; right: 8px; bottom: 8px; border-radius: 40px; max-height: calc(100% - var(--top-inset) - 18px);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--glass-edge), 0 -10px 40px rgba(0,0,0,.2); }
+.sheet .sh-close { width: 34px; height: 34px; border-radius: 17px; }
+.sheet .sh-body { padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+.sheet.bright { background: #fff; box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
+.toast { padding: 12px 20px 12px 14px; box-shadow: inset 0 1px 0 var(--glass-edge), var(--float-shadow); }
+
+[hidden] { display: none !important; }
+/* ================= Onboarding ================= */
+.onboard { position: absolute; inset: 0; z-index: 70; display: none;
+  background: radial-gradient(70% 40% at 0% 0%, var(--amb1), transparent 70%), radial-gradient(60% 35% at 100% 20%, var(--amb2), transparent 70%), radial-gradient(90% 45% at 50% 110%, var(--amb3), transparent 70%), var(--bg); }
+.onboard.open { display: block; }
+.ob-top { position: absolute; inset: 0 0 auto; z-index: 5; padding: calc(var(--top-inset) + 6px) 20px 8px; display: flex; align-items: center; gap: 12px; }
+.ob-back { width: 40px; height: 40px; border-radius: 20px; display: grid; place-items: center; flex: none; color: var(--label); }
+.ob-prog { flex: 1; height: 8px; border-radius: 99px; overflow: hidden; background: var(--fill); box-shadow: inset 0 1px 2px rgba(0,0,0,.08); }
+.ob-prog i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #13A6D6, var(--accent)); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); transition: width .5s cubic-bezier(.3,1.2,.5,1); }
+.ob-fill { height: 32px; padding: 0 12px; border-radius: 99px; font-size: 13px; font-weight: 600; color: var(--accent); flex: none; }
+.ob-page { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; padding: calc(var(--top-inset) + 64px) 24px calc(26px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+.ob-page::-webkit-scrollbar { display: none; }
+.ob-page.nobar { padding-top: calc(var(--top-inset) + 20px); }
+.ob-page.in-fwd { animation: obIn .42s cubic-bezier(.2,.8,.2,1); }
+.ob-page.in-back { animation: obBack .42s cubic-bezier(.2,.8,.2,1); }
+@keyframes obIn { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+@keyframes obBack { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+.ob-step { font-size: 13px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+.ob-page h1 { margin: 0; font-size: 30px; line-height: 1.12; letter-spacing: -.02em; font-weight: 700; text-wrap: balance; }
+.ob-page .lede { margin: -4px 0 4px; color: var(--label2); font-size: 16px; line-height: 1.4; }
+.ob-page form { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.ob-group { background: var(--surface); border-radius: 22px; box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); overflow: hidden; }
+.ob-group .field { padding: 10px 18px; }
+.ob-group .field input, .ob-group .field select { font-size: 17px; border: 0; background: transparent; color: var(--label); outline: none; padding: 2px 0; font-family: inherit; width: 100%; min-width: 0; }
+.ob-group .field.bad label { color: var(--red); }
+.ob-row2 { display: grid; grid-template-columns: 1fr 1fr; }
+.ob-row2 .field + .field::before { left: 0; top: 10px; bottom: 10px; width: .5px; height: auto; right: auto; }
+.ob-row3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; }
+.ob-row3 .field + .field::before { left: 0; top: 10px; bottom: 10px; width: .5px; height: auto; right: auto; }
+.err { color: var(--red); font-size: 14px; padding: 0 6px; min-height: 0; }
+.err:empty { display: none; }
+.ob-note { font-size: 13px; color: var(--label2); padding: 0 6px; line-height: 1.4; }
+.ob-cta { margin-top: auto; padding-top: 8px; display: grid; gap: 10px; }
+.btn.glass { color: var(--label); }
+.linkbtn { color: var(--accent); font-size: 15px; font-weight: 500; padding: 8px; }
+
+/* welcome */
+.welcome { justify-content: flex-end; gap: 18px; }
+.hero-stage { flex: 1; display: grid; place-items: center; min-height: 300px; perspective: 900px; }
+.hero-pass { width: 230px; border-radius: 28px; padding: 16px; color: #fff; display: grid; gap: 12px; position: relative; overflow: hidden;
+  background: radial-gradient(120% 70% at 100% 0%, rgba(120,230,255,.45), transparent 55%), linear-gradient(150deg, #0A2F7A, #0A5BE0 55%, #13A6D6);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -2px 0 rgba(0,0,0,.18), 0 40px 60px -26px rgba(10,80,220,.7), 0 12px 24px -12px rgba(10,40,120,.4);
+  animation: float 6s ease-in-out infinite; }
+.hero-pass .glare { animation: sheen 5s ease-in-out infinite alternate; }
+.hero-pass .qr-panel { padding: 12px; border-radius: 18px; }
+.hero-pass .qr-box { width: 120px; height: 120px; }
+@keyframes float { 0%,100% { transform: rotateX(10deg) rotateY(-14deg) translateY(0); } 50% { transform: rotateX(4deg) rotateY(10deg) translateY(-10px); } }
+.welcome h1 { font-size: 34px; }
+.welcome .wm-big { display: flex; align-items: center; gap: 8px; font-family: var(--font-round); font-weight: 700; font-size: 22px; color: var(--accent); }
+
+/* verify code */
+.otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.otp input { width: 100%; min-width: 0; height: 58px; border-radius: 16px; border: 0; text-align: center; font: 600 24px var(--font-round); color: var(--label); outline: none;
+  background: var(--surface); box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); caret-color: var(--accent); }
+.otp input:focus { box-shadow: inset 0 0 0 2px var(--accent), var(--card-shadow); }
+
+/* plan picker */
+.pick { display: grid; gap: 10px; }
+.pick label { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 16px 18px; border-radius: 22px; background: var(--surface); box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); cursor: pointer; transition: box-shadow .2s, transform .2s; }
+.pick label:active { transform: scale(.985); }
+.pick input { position: absolute; opacity: 0; pointer-events: none; }
+.pick .radio { width: 24px; height: 24px; border-radius: 12px; box-shadow: inset 0 0 0 2px var(--label3); display: grid; place-items: center; }
+.pick input:checked + label { box-shadow: inset 0 0 0 2px var(--accent), var(--card-shadow); }
+.pick input:checked + label .radio { background: var(--accent); box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+.pick input:checked + label .radio::after { content: ""; width: 9px; height: 9px; border-radius: 5px; background: #fff; }
+.pick input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pick .pn { font-weight: 700; font-size: 17px; }
+.pick .pd { font-size: 14px; color: var(--label2); margin-top: 2px; }
+.pick .pp { font: 700 19px var(--font-round); font-variant-numeric: tabular-nums; text-align: right; }
+.pick .pp small { display: block; font: 500 12px var(--font); color: var(--label2); }
+.pop { font-size: 11px; font-weight: 700; color: #fff; background: var(--accent); padding: 2px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 2px; }
+
+/* card preview */
+.cc-wrap { perspective: 1000px; margin: 2px 6px 4px; }
+.cc { position: relative; aspect-ratio: 1.586; max-width: 100%; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,1.2,.4,1); }
+.cc.flip { transform: rotateY(180deg); }
+.cc-face { position: absolute; inset: 0; border-radius: 20px; backface-visibility: hidden; -webkit-backface-visibility: hidden; color: #fff; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+  background: radial-gradient(90% 80% at 100% 0%, rgba(255,255,255,.22), transparent 55%), linear-gradient(135deg, #1C1F2A, #3A4157 60%, #22283A);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.3), inset 0 0 0 .5px rgba(255,255,255,.2), 0 24px 40px -20px rgba(0,0,0,.6); }
+.cc-face.back { transform: rotateY(180deg); padding: 22px 0 18px; justify-content: flex-start; gap: 16px; }
+.cc .stripe { height: 40px; background: #0b0b0d; }
+.cc .sig { margin: 0 20px; height: 34px; border-radius: 6px; background: repeating-linear-gradient(-45deg, #f3f3f3 0 6px, #e4e4e4 6px 12px); display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; color: #111; font: 600 15px var(--mono); }
+.cc .chip { width: 40px; height: 30px; border-radius: 7px; background: linear-gradient(135deg, #E9D18C, #B8953E 60%, #E9D18C); box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+.cc .cc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.cc .cc-brand { font: italic 800 18px var(--font); letter-spacing: .02em; opacity: .95; }
+.cc .cc-num { font: 500 19px var(--mono); letter-spacing: .1em; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.cc .cc-bot { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.cc .cc-bot span { display: block; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; opacity: .65; margin-bottom: 2px; }
+.cc .cc-bot b { font-weight: 600; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 180px; }
+.summary .row { min-height: 44px; }
+.summary .tot .r-title, .summary .tot .r-val { font-weight: 700; color: var(--label); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--label2); padding: 0 6px; cursor: pointer; line-height: 1.4; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; }
+.demo-flag { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--label2); background: var(--accent-soft); padding: 10px 14px; border-radius: 16px; }
+.demo-flag b { color: var(--label); }
+
+/* done */
+.done-ring { width: 120px; height: 120px; border-radius: 60px; margin: 0 auto; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(180deg, #4BD866, #1FA34A); box-shadow: inset 0 2px 1px rgba(255,255,255,.45), inset 0 -8px 16px rgba(0,0,0,.15), 0 24px 40px -16px rgba(31,163,74,.7);
+  animation: popIn .6s cubic-bezier(.3,1.6,.5,1) both; }
+.done-ring path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: drawCheck .45s .35s ease-out forwards; }
+@keyframes popIn { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes drawCheck { to { stroke-dashoffset: 0; } }
+.done-page { text-align: center; justify-content: center; }
+.done-page .lede { margin: 0 auto; max-width: 300px; }
+</style>
+
+<div class="stage">
+  <aside class="pitch">
+    <div class="eyebrow">Concept redesign</div>
+    <h1>The wash pass, rebuilt to feel like iOS.</h1>
+    <p>A tappable prototype. Start by creating an account (or tap Sign in), then click through the tabs, tap the pass to enlarge the code, open a location, or switch plans.</p>
+    <ul>
+      <li><span><b>Sign-up in six short steps</b>: name, contact, text-code check, car, plan and card.</span></li>
+      <li><span><b>Pass first.</b> The scan code opens instantly and goes full-screen white for the scanner.</span></li>
+      <li><span><b>Four clear tabs</b> with labels, where the old app had five unlabeled icons.</span></li>
+      <li><span><b>Live location status</b> showing hours, wait time and distance.</span></li>
+      <li><span><b>Upgrade plans in-app</b>, a direct revenue path for the owner.</span></li>
+      <li><span><b>Add to Wallet</b> for Apple, Google and Samsung, so the pass is one double-click away.</span></li>
+      <li><span><b>Liquid glass</b> tab bar and sheets, with light and dark mode.</span></li>
+    </ul>
+  </aside>
+
+  <div class="device">
+    <div class="screen" id="screen">
+      <div class="island"></div>
+      <div class="statusbar"><span id="clock">9:41</span>
+        <span class="sb-right">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.2-1.2A10.2 10.2 0 0 0 8 .5C5.2.5 2.6 1.6.8 3.4L2 4.6a8.5 8.5 0 0 1 6-2.4Zm0 3.4c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9a6.8 6.8 0 0 0-4.8 1.9L4.4 7c1-.9 2.2-1.4 3.6-1.4Zm0 3.4c-.5 0-1 .2-1.3.5L8 10.8l1.3-1.3c-.3-.3-.8-.5-1.3-.5Z"/></svg>
+          <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" fill="currentColor" opacity=".45"/></svg>
+        </span>
+      </div>
+
+      <!-- PASS -->
+      <section class="view" id="v-pass" data-title="Wash Pass">
+        <div class="navbar"><span class="nb-title">Wash Pass</span></div>
+        <div class="scroll">
+          <div class="large-title"><div class="lt-sub" id="greet">Good afternoon</div><h2>Wash Pass</h2></div>
+          <button class="pass rim" id="passCard" aria-label="Enlarge scan code">
+            <canvas class="drops" id="drops"></canvas>
+            <span class="glare"></span>
+            <div class="p-inner">
+              <div class="p-top">
+                <div class="wordmark"><span class="wm-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5c-.3 0-.6.2-.8.4C9.6 5 5.5 10.4 5.5 14.5a6.5 6.5 0 0 0 13 0c0-4.1-4.1-9.5-5.7-11.6a1 1 0 0 0-.8-.4Z"/></svg></span><span class="brand-name">Glide</span></div>
+                <span class="plan-chip" id="passPlan">Basic</span>
+              </div>
+              <div class="qr-panel">
+                <div class="qr-box" id="qrSmall"></div>
+                <div class="member-no" id="memberNo">139 106</div>
+                <div class="qr-hint"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Tap to enlarge for the scanner</div>
+              </div>
+              <div class="p-fields">
+                <span class="f-l">Member</span><span class="f-l f-r">Valid at</span>
+                <span class="f-v" id="passName">Alex Rivera</span><span class="f-v f-r">All locations</span>
+              </div>
+            </div>
+          </button>
+          <div class="wallet-row"><button class="wallet-btn" id="addWallet">
+            <svg class="wallet-glyph" viewBox="0 0 30 22" fill="none"><rect x="1" y="1" width="28" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/><path d="M1.5 7.5h27" stroke="currentColor" stroke-width="1.8"/><rect x="19" y="11.5" width="6" height="4" rx="1.6" fill="currentColor"/></svg>
+            <span id="walletLabel">Add to Wallet</span></button></div>
+          <div class="status-line"><span class="dot"></span><span>Active · Renews <span id="renew1">Dec 7</span><span id="inWallet"></span></span></div>
+
+          <div class="section-h"><h3>This month</h3></div>
+          <div class="tiles">
+            <div class="tile"><span class="t-l">Washes</span><span class="t-v">3<small>/ Unlimited</small></span><span class="t-s">Last on Nov 6</span></div>
+            <div class="tile"><span class="t-l">You saved</span><span class="t-v">$15<small>.05</small></span><span class="t-s">vs. $15 single washes</span></div>
+          </div>
+
+          <div class="section-h"><h3>Home location</h3><button class="link" data-go="locations">See all</button></div>
+          <div class="group">
+            <button class="row loc" data-loc="0">
+              <span class="wash-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+              <span class="r-main"><div class="r-title" data-f="name"></div><div class="r-meta" data-f="meta"></div></span>
+              <svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg>
+            </button>
+          </div>
+
+          <div class="section-h"><h3>Recent washes</h3><button class="link" data-go="membership">History</button></div>
+          <div class="group" id="recent"></div>
+        </div>
+      </section>
+
+      <!-- LOCATIONS -->
+      <section class="view" id="v-locations" data-title="Locations">
+        <div class="navbar"><span class="nb-title">Locations</span></div>
+        <div class="scroll">
+          <div class="large-title"><h2>Locations</h2></div>
+          <label class="search" for="q">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="q" type="search" placeholder="Search town or address" autocomplete="off">
+          </label>
+          <div class="map" id="map"><canvas id="mapCanvas"></canvas></div>
+          <div class="seg" role="group" aria-label="Sort">
+            <button id="segNear" aria-pressed="true">Nearest</button>
+            <button id="segRecent" aria-pressed="false">Recently visited</button>
+          </div>
+          <div class="cap" id="locCap">4 locations</div>
+          <div class="group" id="locList"></div>
+          <div class="foot">Wait times update every few minutes from the wash bay sensors.</div>
+        </div>
+      </section>
+
+      <!-- MEMBERSHIP -->
+      <section class="view" id="v-membership" data-title="Membership">
+        <div class="navbar"><span class="nb-title">Membership</span></div>
+        <div class="scroll">
+          <div class="large-title"><h2>Membership</h2></div>
+          <div class="plan-card">
+            <div class="ring">
+              <svg viewBox="0 0 92 92"><circle cx="46" cy="46" r="40" fill="none" stroke="var(--fill)" stroke-width="9"/><circle id="ringArc" cx="46" cy="46" r="40" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="100"/></svg>
+              <div class="rc"><b>29</b><span>days left</span></div>
+            </div>
+            <div>
+              <h4 id="curPlanName">Basic Monthly</h4>
+              <p><span id="curPlanPrice">$29.95</span> / month · 1 vehicle<br>Renews <span id="renew2">Dec 7, 2026</span></p>
+            </div>
+          </div>
+
+          <div class="section-h"><h3>Plans</h3></div>
+          <div class="tiers" id="tiers"></div>
+          <div class="foot">Changes take effect on your next renewal date. Cancel anytime from Account.</div>
+
+          <div class="section-h"><h3>Wash history</h3></div>
+          <div class="group" id="history"></div>
+        </div>
+      </section>
+
+      <!-- ACCOUNT -->
+      <section class="view" id="v-account" data-title="Account">
+        <div class="navbar"><span class="nb-title">Account</span></div>
+        <div class="scroll">
+          <div class="large-title"><h2>Account</h2></div>
+          <div class="profile">
+            <div class="avatar" id="avatar">AR</div>
+            <div class="pn" id="profName">Alex Rivera</div>
+            <div class="pe" id="profEmail">alex.rivera@example.com</div>
+          </div>
+
+          <div class="cap">Personal</div>
+          <div class="group">
+            <button class="row icon-row" data-sheet="profile"><span class="ico" style="background:#8E8E93"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5Z"/></svg></span><span class="r-main"><div class="r-title">Personal information</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-toast="Password updated"><span class="ico" style="background:#636366"><svg viewBox="0 0 24 24" fill="#fff"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#fff" stroke-width="2"/></svg></span><span class="r-main"><div class="r-title">Password &amp; security</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+          </div>
+
+          <div class="cap">Wallet &amp; vehicles</div>
+          <div class="group">
+            <button class="row icon-row" data-toast="Payment methods"><span class="ico" style="background:#34C759"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18"/></svg></span><span class="r-main"><div class="r-title">Payment</div></span><span class="r-val" id="payVal">Visa •• 4821</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-toast="Vehicles"><span class="ico" style="background:#0A84FF"><svg viewBox="0 0 24 24" fill="#fff"><path d="M5 11 6.6 6.6A2 2 0 0 1 8.5 5.3h7a2 2 0 0 1 1.9 1.3L19 11a2 2 0 0 1 1.5 2v4a1 1 0 0 1-1 1H19a1.5 1.5 0 0 1-3 0H8a1.5 1.5 0 0 1-3 0h-.5a1 1 0 0 1-1-1v-4A2 2 0 0 1 5 11Zm1.6 0h10.8l-1.3-3.6a.7.7 0 0 0-.6-.4H8.5a.7.7 0 0 0-.6.4Z"/></svg></span><span class="r-main"><div class="r-title" id="vehName">Toyota RAV4</div><div class="r-sub" id="vehSub">Silver · 2021</div></span><span class="plate" id="vehPlate">CT 8ZK·214</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-toast="Receipts"><span class="ico" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">Receipts</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+          </div>
+
+          <div class="cap">Notifications</div>
+          <div class="group">
+            <div class="row icon-row"><span class="ico" style="background:#FF3B30"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0Z"/></svg></span><span class="r-main"><div class="r-title">Wash reminders</div><div class="r-sub">After rain or salt days</div></span><button class="switch" role="switch" aria-checked="true" aria-label="Wash reminders"></button></div>
+            <div class="row icon-row"><span class="ico" style="background:#AF52DE"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5 14.3 9l6.7.2-5.3 4.1 1.9 6.5L12 16l-5.6 3.8 1.9-6.5L3 9.2 9.7 9Z"/></svg></span><span class="r-main"><div class="r-title">Deals &amp; offers</div></span><button class="switch" role="switch" aria-checked="false" aria-label="Deals and offers"></button></div>
+          </div>
+
+          <div class="cap">Help</div>
+          <div class="group">
+            <button class="row icon-row" data-sheet="help-text"><span class="ico" style="background:#34C759"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 4C7 4 3 7.3 3 11.3c0 2.3 1.3 4.3 3.3 5.6L5.5 20l3.6-2c.9.2 1.9.4 2.9.4 5 0 9-3.3 9-7.2S17 4 12 4Z"/></svg></span><span class="r-main"><div class="r-title">Text us</div></span><span class="r-val">Replies in ~5 min</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-sheet="help-call"><span class="ico" style="background:#30B0C7"><svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 3.5 9 3l1.8 4.3-2 1.6a11 11 0 0 0 6.3 6.3l1.6-2L21 15l-.5 2.4A2 2 0 0 1 18.6 19 15.6 15.6 0 0 1 5 5.4a2 2 0 0 1 1.6-1.9Z"/></svg></span><span class="r-main"><div class="r-title">Call support</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-sheet="howto"><span class="ico" style="background:#5856D6"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l10-6.5Z"/></svg></span><span class="r-main"><div class="r-title">How your pass works</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+          </div>
+
+          <div class="group" style="margin-top:28px"><button class="row signout" data-sheet="signout">Sign Out</button></div>
+          <div class="version">Version 3.0 · Concept</div>
+        </div>
+      </section>
+
+      <nav class="tabbar rim" role="tablist"><span class="lens" id="lens"></span>
+        <button role="tab" data-tab="pass" aria-selected="true"><svg viewBox="0 0 28 28" fill="currentColor"><path d="M5 4h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm1.5 2.5v3h3v-3Zm10.5-2.5h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm1.5 2.5v3h3v-3ZM5 16h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1Zm1.5 2.5v3h3v-3ZM16 16h3v3h-3Zm3 3h3v3h-3Zm-3 3h3v2h-3Zm6-6h2v3h-2Zm0 6h2v2h-2Z"/></svg>Pass</button>
+        <button role="tab" data-tab="locations" aria-selected="false"><svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2.5a9 9 0 0 0-9 9c0 6.6 7.8 13.3 8.2 13.6.5.4 1.1.4 1.6 0 .4-.3 8.2-7 8.2-13.6a9 9 0 0 0-9-9Zm0 12.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>Locations</button>
+        <button role="tab" data-tab="membership" aria-selected="false"><svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2.5c-.4 0-.8.2-1 .5-2 2.6-7.5 9.7-7.5 15a8.5 8.5 0 0 0 17 0c0-5.3-5.5-12.4-7.5-15-.2-.3-.6-.5-1-.5Zm-3.6 15.3c.6 0 1 .4 1.1.9.2 1.2 1.1 2.1 2.3 2.3a1.1 1.1 0 0 1-.3 2.2 4.9 4.9 0 0 1-4.1-4.1 1.1 1.1 0 0 1 1-1.3Z"/></svg>Membership</button>
+        <button role="tab" data-tab="account" aria-selected="false"><svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2.5a11.5 11.5 0 1 0 0 23 11.5 11.5 0 0 0 0-23Zm0 5a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 16a9 9 0 0 1-6.9-3.2c1.5-1.6 4-2.6 6.9-2.6s5.4 1 6.9 2.6A9 9 0 0 1 14 23.5Z"/></svg>Account</button>
+      </nav>
+
+
+      <div class="onboard" id="onboard" aria-label="Sign in or create an account">
+        <div class="ob-top" id="obTop">
+          <button class="ob-back glass rim" id="obBack" aria-label="Back"><svg width="11" height="18" viewBox="0 0 11 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 2 9l7 7"/></svg></button>
+          <div class="ob-prog" id="obProg"><i id="obBar"></i></div>
+          <button class="ob-fill glass" id="obFill">Fill example</button>
+        </div>
+
+        <!-- welcome -->
+        <section class="ob-page welcome nobar" data-page="welcome">
+          <div class="hero-stage"><div class="hero-pass rim"><span class="glare"></span>
+            <div class="p-top" style="display:flex;justify-content:space-between;align-items:center"><div class="wordmark" style="font-size:17px"><span class="wm-mark" style="width:24px;height:24px;border-radius:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5c-.3 0-.6.2-.8.4C9.6 5 5.5 10.4 5.5 14.5a6.5 6.5 0 0 0 13 0c0-4.1-4.1-9.5-5.7-11.6a1 1 0 0 0-.8-.4Z"/></svg></span><span class="brand-name">Glide</span></div><span class="plan-chip" style="font-size:10px">Unlimited</span></div>
+            <div class="qr-panel"><div class="qr-box" id="qrHero"></div></div>
+          </div></div>
+          <div class="wm-big"><span class="brand-name">Glide</span> Car Wash</div>
+          <h1>Unlimited washes. One scan at the gate.</h1>
+          <p class="lede">Join in about two minutes. Your pass works at every location, and you can cancel any time.</p>
+          <div class="ob-cta" style="margin-top:6px">
+            <button class="btn primary" data-ob="name">Create account</button>
+            <button class="btn glass rim" data-ob="signin">Sign in</button>
+          </div>
+        </section>
+
+        <!-- sign in -->
+        <section class="ob-page" data-page="signin" hidden>
+          <h1>Welcome back</h1>
+          <p class="lede">Sign in with the email you joined with.</p>
+          <form id="fSignin" novalidate>
+            <div class="ob-group">
+              <div class="field"><label for="siEmail">Email</label><input id="siEmail" type="email" placeholder="you@example.com" autocomplete="username"></div>
+              <div class="field"><label for="siPw">Password</label><input id="siPw" type="password" placeholder="Your password" autocomplete="current-password"></div>
+            </div>
+            <div class="err" id="siErr"></div>
+            <button type="button" class="linkbtn" id="siForgot" style="align-self:flex-start">Forgot password?</button>
+            <div class="ob-cta"><button class="btn primary" type="submit">Sign in</button>
+              <button type="button" class="linkbtn" data-ob="name">New here? Create an account</button></div>
+          </form>
+        </section>
+
+        <!-- 1 name -->
+        <section class="ob-page" data-page="name" hidden>
+          <div class="ob-step">Step 1 of 6</div>
+          <h1>What's your name?</h1>
+          <p class="lede">It goes on your wash pass.</p>
+          <form id="fName" novalidate>
+            <div class="ob-group">
+              <div class="field"><label for="suFirst">First name</label><input id="suFirst" placeholder="Alex" autocomplete="given-name"></div>
+              <div class="field"><label for="suLast">Last name</label><input id="suLast" placeholder="Rivera" autocomplete="family-name"></div>
+            </div>
+            <div class="err" id="nameErr"></div>
+            <div class="ob-cta"><button class="btn primary" type="submit">Continue</button></div>
+          </form>
+        </section>
+
+        <!-- 2 contact -->
+        <section class="ob-page" data-page="contact" hidden>
+          <div class="ob-step">Step 2 of 6</div>
+          <h1>How do we reach you?</h1>
+          <p class="lede">We text a code to confirm your number. Receipts go to your email.</p>
+          <form id="fContact" novalidate>
+            <div class="ob-group">
+              <div class="field"><label for="suEmail">Email</label><input id="suEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
+              <div class="field"><label for="suPhone">Mobile number</label><input id="suPhone" type="tel" inputmode="tel" placeholder="(203) 555-0100" autocomplete="tel-national"></div>
+              <div class="field"><label for="suPw">Create a password</label><input id="suPw" type="password" placeholder="At least 8 characters" autocomplete="new-password"></div>
+            </div>
+            <div class="err" id="contactErr"></div>
+            <div class="ob-cta"><button class="btn primary" type="submit">Send code</button></div>
+          </form>
+        </section>
+
+        <!-- 3 verify -->
+        <section class="ob-page" data-page="verify" hidden>
+          <div class="ob-step">Step 3 of 6</div>
+          <h1>Enter the 6-digit code</h1>
+          <p class="lede">Sent to <b id="vPhone" style="color:var(--label)"></b>. In this demo any 6 digits work.</p>
+          <form id="fVerify" novalidate>
+            <div class="otp" id="otp"><input id="otp0" inputmode="numeric" maxlength="1" aria-label="Digit 1" autocomplete="one-time-code"><input id="otp1" inputmode="numeric" maxlength="1" aria-label="Digit 2" autocomplete="off"><input id="otp2" inputmode="numeric" maxlength="1" aria-label="Digit 3" autocomplete="off"><input id="otp3" inputmode="numeric" maxlength="1" aria-label="Digit 4" autocomplete="off"><input id="otp4" inputmode="numeric" maxlength="1" aria-label="Digit 5" autocomplete="off"><input id="otp5" inputmode="numeric" maxlength="1" aria-label="Digit 6" autocomplete="off"></div>
+            <div class="err" id="otpErr"></div>
+            <button type="button" class="linkbtn" id="resend" style="align-self:flex-start">Resend code</button>
+            <div class="ob-cta"><button class="btn primary" type="submit">Verify</button></div>
+          </form>
+        </section>
+
+        <!-- 4 vehicle -->
+        <section class="ob-page" data-page="vehicle" hidden>
+          <div class="ob-step">Step 4 of 6</div>
+          <h1>Which car is on the plan?</h1>
+          <p class="lede">The gate camera reads your plate, so you can skip the scan when you're in a hurry.</p>
+          <form id="fVehicle" novalidate>
+            <div class="ob-group">
+              <div class="field"><label for="suMake">Make and model</label><input id="suMake" placeholder="Toyota RAV4"></div>
+              <div class="ob-row3">
+                <div class="field"><label for="suPlate">License plate</label><input id="suPlate" placeholder="8ZK 214" style="text-transform:uppercase;font-family:var(--mono)"></div>
+                <div class="field"><label for="suState">State</label><select id="suState"><option>CT</option><option>MA</option><option>NY</option><option>RI</option><option>NJ</option></select></div>
+                <div class="field"><label for="suColor">Color</label><input id="suColor" placeholder="Silver"></div>
+              </div>
+            </div>
+            <div class="err" id="vehErr"></div>
+            <div class="ob-cta"><button class="btn primary" type="submit">Continue</button></div>
+          </form>
+        </section>
+
+        <!-- 5 plan -->
+        <section class="ob-page" data-page="plan" hidden>
+          <div class="ob-step">Step 5 of 6</div>
+          <h1>Pick your plan</h1>
+          <p class="lede">Wash as often as you like. Switch plans any time.</p>
+          <form id="fPlan" novalidate>
+            <div class="pick" id="pick"></div>
+            <div class="ob-cta"><button class="btn primary" type="submit">Continue</button></div>
+          </form>
+        </section>
+
+        <!-- 6 payment -->
+        <section class="ob-page" data-page="payment" hidden>
+          <div class="ob-step">Step 6 of 6</div>
+          <h1>Add a card</h1>
+          <form id="fPay" novalidate>
+            <div class="cc-wrap"><div class="cc" id="cc">
+              <div class="cc-face"><div class="cc-top"><span class="chip"></span><span class="cc-brand" id="ccBrand"></span></div>
+                <div class="cc-num" id="ccNum">•••• •••• •••• ••••</div>
+                <div class="cc-bot"><div><span>Cardholder</span><b id="ccName">Your name</b></div><div style="text-align:right"><span>Expires</span><b id="ccExp">MM/YY</b></div></div></div>
+              <div class="cc-face back"><div class="stripe"></div><div class="sig" id="ccCvc">•••</div></div>
+            </div></div>
+            <div class="demo-flag"><span><b>Prototype only.</b> Nothing you type here is sent or saved. Use the test card 4242 4242 4242 4242.</span></div>
+            <div class="ob-group">
+              <div class="field"><label for="cNum">Card number</label><input id="cNum" inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="off"></div>
+              <div class="ob-row3">
+                <div class="field"><label for="cExp">Expires</label><input id="cExp" inputmode="numeric" placeholder="MM/YY" autocomplete="off"></div>
+                <div class="field"><label for="cCvc">CVC</label><input id="cCvc" inputmode="numeric" placeholder="123" maxlength="4" autocomplete="off"></div>
+                <div class="field"><label for="cZip">ZIP</label><input id="cZip" inputmode="numeric" placeholder="06706" maxlength="5" autocomplete="off"></div>
+              </div>
+            </div>
+            <div class="err" id="payErr"></div>
+            <div class="ob-group summary" id="summary"></div>
+            <label class="check" for="cAgree"><input type="checkbox" id="cAgree"><span>I agree to be charged monthly until I cancel, and to the membership terms.</span></label>
+            <div class="ob-cta"><button class="btn primary" type="submit" id="payBtn">Start membership</button></div>
+          </form>
+        </section>
+
+        <!-- done -->
+        <section class="ob-page done-page nobar" data-page="done" hidden>
+          <div class="done-ring"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div>
+          <h1 id="doneTitle" style="margin-top:14px">You're all set</h1>
+          <p class="lede" id="doneText"></p>
+          <div class="ob-cta" style="margin-top:28px"><button class="btn primary" id="doneGo">Show my pass</button></div>
+        </section>
+      </div>
+
+      <div class="sheet-wrap" id="sheetWrap">
+        <div class="backdrop" id="backdrop"></div>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+          <div class="grabber"></div>
+          <div class="sh-head"><h3 id="sheetTitle"></h3><button class="sh-close" id="sheetClose" aria-label="Close"><svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m2 2 8 8M10 2l-8 8"/></svg></button></div>
+          <div class="sh-body" id="sheetBody"></div>
+        </div>
+      </div>
+
+      <div class="toast rim" id="toast"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4Z"/></svg><span id="toastText"></span></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ---- Edit this block to rebrand the prototype for a pitch ---- */
+const BRAND = { name: "Glide", phone: "(203) 555-0142", sms: "(203) 555-0199" };
+const MEMBER = { first: "Alex", last: "Rivera", email: "alex.rivera@example.com", phone: "(475) 555-0128", id: "139106" };
+
+const LOCS = [
+  { name: "Waterbury", addr: "2180 S Main St, Waterbury", dist: 1.2, wait: 0, open: [7,20], x: .42, y: .55, home: true, visited: 1 },
+  { name: "Terryville", addr: "108 Main St, Terryville", dist: 8.6, wait: 6, open: [7,19], x: .16, y: .22, visited: 3 },
+  { name: "Thomaston", addr: "23 Reynolds Bridge Rd, Thomaston", dist: 10.4, wait: 0, open: [8,19], x: .3, y: .12, visited: 4 },
+  { name: "Naugatuck", addr: "415 Rubber Ave, Naugatuck", dist: 6.1, wait: 12, open: [7,20], x: .72, y: .8, visited: 2 },
+];
+const SERVICES = ["Touchless wash", "Free vacuums", "Tire shine", "Undercarriage rinse", "Mat cleaner"];
+const PLANS = [
+  { id: "basic", name: "Basic", price: 29.95, feats: [["Unlimited exterior wash",1],["Spot-free rinse",1],["Undercarriage + rust guard",0],["Ceramic shield + tire shine",0]] },
+  { id: "deluxe", name: "Deluxe", price: 39.95, feats: [["Unlimited exterior wash",1],["Spot-free rinse",1],["Undercarriage + rust guard",1],["Ceramic shield + tire shine",0]] },
+  { id: "ultimate", name: "Ultimate", price: 49.95, feats: [["Unlimited exterior wash",1],["Spot-free rinse",1],["Undercarriage + rust guard",1],["Ceramic shield + tire shine",1]] },
+];
+const HISTORY = [
+  ["Nov 6", "Waterbury", "Basic", "4:12 PM"],
+  ["Nov 2", "Naugatuck", "Basic", "11:48 AM"],
+  ["Oct 29", "Waterbury", "Basic", "5:30 PM"],
+  ["Oct 21", "Terryville", "Basic", "9:05 AM"],
+  ["Oct 14", "Waterbury", "Basic", "6:41 PM"],
+];
+let state = { plan: "basic", sort: "near", query: "", wallets: new Set() };
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const chev = '<svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg>';
+const dropIco = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c-.3 0-.6.2-.8.4C9.6 5 5.5 10.4 5.5 14.5a6.5 6.5 0 0 0 13 0c0-4.1-4.1-9.5-5.7-11.6a1 1 0 0 0-.8-.4Z"/></svg>';
+const check = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+const dash = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 12h10"/></svg>';
+const fmtH = h => (h % 12 || 12) + (h < 12 ? " AM" : " PM");
+const nowH = () => { const d = new Date(); return d.getHours() + d.getMinutes() / 60; };
+
+function locStatus(l) {
+  const h = nowH();
+  if (h < l.open[0] || h >= l.open[1]) return { cls: "closed", txt: "Closed", sub: "Opens " + fmtH(l.open[0]) };
+  if (l.wait >= 10) return { cls: "busy", txt: "Busy", sub: "~" + l.wait + " min wait" };
+  return { cls: "open", txt: "Open", sub: l.wait ? "~" + l.wait + " min wait" : "No wait" };
+}
+function locMeta(l) {
+  const s = locStatus(l);
+  return `<span class="pill ${s.cls}">${s.txt}</span><span>${s.sub}</span><span>·</span><span>Until ${fmtH(l.open[1])}</span>`;
+}
+
+/* ---- Brand + member ---- */
+$$(".brand-name").forEach(e => e.textContent = BRAND.name);
+$("#passName").textContent = MEMBER.first + " " + MEMBER.last;
+$("#memberNo").textContent = MEMBER.id.replace(/(\d{3})(?=\d)/g, "$1 ");
+function syncProfile() {
+  $("#profName").textContent = $("#passName").textContent = MEMBER.first + " " + MEMBER.last;
+  $("#profEmail").textContent = MEMBER.email;
+  $("#avatar").textContent = (MEMBER.first[0] || "") + (MEMBER.last[0] || "");
+}
+syncProfile();
+function setGreet() { const hr = new Date().getHours(); $("#greet").textContent = (hr < 12 ? "Good morning, " : hr < 18 ? "Good afternoon, " : "Good evening, ") + MEMBER.first; }
+setGreet();
+
+function makeQR(el, size) {
+  el.innerHTML = "";
+  if (window.QRCode) new QRCode(el, { text: BRAND.name.toUpperCase() + "-" + MEMBER.id, width: size * 2, height: size * 2, colorDark: "#000", colorLight: "#fff", correctLevel: QRCode.CorrectLevel.M });
+  else el.innerHTML = '<div style="font:600 13px var(--mono);color:#555">' + MEMBER.id + "</div>";
+}
+makeQR($("#qrSmall"), 168);
+
+/* droplets on the pass */
+(function drops() {
+  const c = $("#drops"), r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  const w = c.offsetWidth || 358, h = c.offsetHeight || 420;
+  c.width = w * dpr; c.height = h * dpr;
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 70; i++) {
+    const px = rnd() * w, py = rnd() * h, rad = 1 + rnd() * rnd() * 7;
+    const g = x.createRadialGradient(px - rad * .3, py - rad * .4, 0, px, py, rad);
+    g.addColorStop(0, "rgba(255,255,255,.75)"); g.addColorStop(.5, "rgba(255,255,255,.18)"); g.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = g; x.beginPath(); x.arc(px, py, rad, 0, 7); x.fill();
+  }
+})();
+
+/* ---- Home location row ---- */
+function renderHome() {
+  const i = LOCS.findIndex(l => l.home), l = LOCS[i], row = $('#v-pass .row.loc');
+  row.dataset.loc = i;
+  $('[data-f="name"]', row).textContent = BRAND.name + " " + l.name;
+  $('[data-f="meta"]', row).innerHTML = locMeta(l);
+}
+
+/* ---- Recent + history ---- */
+function washRow(h) {
+  return `<div class="row"><span class="wash-ico">${dropIco}</span><span class="r-main"><div class="r-title">${h[1]}</div><div class="r-sub">${h[0]} · ${h[3]}</div></span><span class="r-val" style="font-size:15px">${h[2]}</span></div>`;
+}
+$("#recent").innerHTML = HISTORY.slice(0, 3).map(washRow).join("");
+
+/* ---- Locations ---- */
+function renderLocs() {
+  let list = LOCS.map((l, i) => ({ ...l, i }));
+  const q = state.query.trim().toLowerCase();
+  if (q) list = list.filter(l => (l.name + " " + l.addr).toLowerCase().includes(q));
+  list.sort((a, b) => state.sort === "near" ? a.dist - b.dist : a.visited - b.visited);
+  $("#locCap").textContent = q ? `${list.length} result${list.length === 1 ? "" : "s"}` : `${list.length} locations`;
+  $("#locList").innerHTML = list.length ? list.map(l => `
+    <button class="row loc" data-loc="${l.i}">
+      <span class="r-main"><div class="r-title">${BRAND.name} ${l.name}${l.home ? ' <span class="badge-cur" style="margin-left:4px">Home</span>' : ""}</div>
+      <div class="r-sub">${l.addr}</div><div class="r-meta">${locMeta(l)}</div></span>
+      <span class="dist">${l.dist.toFixed(1)} mi</span>${chev}
+    </button>`).join("") : `<div class="row"><span class="r-main"><div class="r-title">No locations match “${state.query}”</div><div class="r-sub">Try a town name like Waterbury.</div></span></div>`;
+}
+$("#q").addEventListener("input", e => { state.query = e.target.value; renderLocs(); });
+$("#segNear").onclick = () => { state.sort = "near"; $("#segNear").setAttribute("aria-pressed", "true"); $("#segRecent").setAttribute("aria-pressed", "false"); renderLocs(); };
+$("#segRecent").onclick = () => { state.sort = "recent"; $("#segRecent").setAttribute("aria-pressed", "true"); $("#segNear").setAttribute("aria-pressed", "false"); renderLocs(); };
+
+function drawMap() {
+  const box = $("#map"), c = $("#mapCanvas"), w = box.clientWidth, h = box.clientHeight;
+  if (!w) return;
+  const dpr = window.devicePixelRatio || 1; c.width = w * dpr; c.height = h * dpr;
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+  x.fillStyle = v("--map-land"); x.fillRect(0, 0, w, h);
+  // river
+  x.strokeStyle = v("--map-water"); x.lineWidth = 14; x.lineCap = "round";
+  x.beginPath(); x.moveTo(w * .55, -10); x.bezierCurveTo(w * .5, h * .3, w * .62, h * .5, w * .52, h * .75); x.bezierCurveTo(w * .46, h * .9, w * .5, h, w * .48, h + 10); x.stroke();
+  // roads
+  const road = (pts, col, lw) => { x.strokeStyle = col; x.lineWidth = lw; x.beginPath(); x.moveTo(pts[0] * w, pts[1] * h); for (let i = 2; i < pts.length; i += 2) x.lineTo(pts[i] * w, pts[i + 1] * h); x.stroke(); };
+  [[-.1,.35, .3,.42, .6,.48, 1.1,.4],[.2,-.1, .28,.4, .4,.7, .45,1.1],[.7,-.1, .66,.3, .75,.7, .9,1.1],[-.1,.8, .3,.7, .6,.85, 1.1,.75],[.0,.1, .4,.15, 1.1,.05]].forEach(p => road(p, v("--map-road"), 4));
+  road([-.1,.62, .4,.58, 1.1,.62], v("--map-road2"), 7);
+  // pins
+  $$(".pin, .me", box).forEach(e => e.remove());
+  LOCS.forEach((l, i) => {
+    const p = document.createElement("button");
+    p.className = "pin" + (l.home ? " home" : ""); p.dataset.loc = i; p.setAttribute("aria-label", BRAND.name + " " + l.name);
+    p.style.left = l.x * 100 + "%"; p.style.top = "calc(" + (l.y * 75) + "% + 30px)";
+    p.innerHTML = `<span class="pb">${dropIco}</span>`;
+    box.appendChild(p);
+  });
+  const me = document.createElement("span"); me.className = "me"; me.style.left = "48%"; me.style.top = "66%"; box.appendChild(me);
+}
+
+/* ---- Plans ---- */
+function renderPlans() {
+  const cur = PLANS.find(p => p.id === state.plan);
+  $("#tiers").innerHTML = PLANS.map(p => `
+    <div class="tier ${p.id === state.plan ? "current" : ""}">
+      <div class="th"><span class="tn">${p.name} ${p.id === state.plan ? '<span class="badge-cur">Current</span>' : ""}</span><span class="tp">$${p.price.toFixed(2)}<small> /mo</small></span></div>
+      <ul>${p.feats.map(f => `<li class="${f[1] ? "" : "no"}">${f[1] ? check : dash}${f[0]}</li>`).join("")}</ul>
+      ${p.id === state.plan ? "" : `<button class="btn ${p.price > cur.price ? "primary" : "tinted"}" data-plan="${p.id}">${p.price > cur.price ? "Upgrade to " + p.name : "Switch to " + p.name}</button>`}
+    </div>`).join("");
+  $("#curPlanName").textContent = cur.name + " Monthly";
+  $("#curPlanPrice").textContent = "$" + cur.price.toFixed(2);
+  $("#passPlan").textContent = cur.name;
+  $("#history").innerHTML = HISTORY.map(h => washRow([h[0], h[1], cur.name === "Basic" ? h[2] : h[2], h[3]])).join("");
+}
+// ring: 29 of 31 days left
+(function ring() { const L = 2 * Math.PI * 40; $("#ringArc").setAttribute("stroke-dasharray", L); $("#ringArc").setAttribute("stroke-dashoffset", L * (1 - 29 / 31)); })();
+
+/* ---- Navigation ---- */
+const TABS = ["pass", "locations", "membership", "account"];
+function show(tab, push = true) {
+  if (!TABS.includes(tab)) tab = "pass";
+  $$(".view").forEach(v => v.classList.toggle("active", v.id === "v-" + tab));
+  $$(".tabbar button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  if (tab === "locations") requestAnimationFrame(drawMap);
+  requestAnimationFrame(moveLens);
+  if (push && location.hash.slice(1) !== tab) { try { history.replaceState(null, "", "#" + tab); } catch (e) { location.hash = tab; } }
+}
+$$(".tabbar button").forEach(b => b.onclick = () => {
+  const v = $("#v-" + b.dataset.tab);
+  if (v.classList.contains("active")) $(".scroll", v).scrollTo({ top: 0, behavior: "smooth" });
+  show(b.dataset.tab);
+});
+window.addEventListener("hashchange", () => show(location.hash.slice(1), false));
+$$(".view").forEach(v => {
+  const sc = $(".scroll", v), nb = $(".navbar", v);
+  sc.addEventListener("scroll", () => nb.classList.toggle("scrolled", sc.scrollTop > 38), { passive: true });
+});
+
+/* ---- Sheet ---- */
+const wrap = $("#sheetWrap"), sheet = $("#sheet");
+function openSheet(title, html, opts = {}) {
+  $("#sheetTitle").textContent = title;
+  $("#sheetBody").innerHTML = html;
+  sheet.classList.toggle("bright", !!opts.bright);
+  wrap.classList.add("open");
+  opts.after && opts.after();
+  setTimeout(() => $("#sheetClose").focus(), 50);
+}
+function closeSheet() { wrap.classList.remove("open"); }
+$("#backdrop").onclick = closeSheet; $("#sheetClose").onclick = closeSheet;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+
+let toastT;
+function toast(msg) {
+  $("#toastText").textContent = msg; $("#toast").classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => $("#toast").classList.remove("show"), 2200);
+}
+
+$("#passCard").onclick = () => openSheet("", `
+  <div class="big-qr">
+    <div class="wordmark" style="color:#0A2F7A">${BRAND.name}</div>
+    <div class="qr-box" id="qrBig"></div>
+    <div class="member-no" style="font-size:22px">${$("#memberNo").textContent}</div>
+    <p>Hold your phone up to the scanner at the pay station. Screen brightness goes up automatically.</p>
+  </div>`, { bright: true, after: () => makeQR($("#qrBig"), 240) });
+
+function openLoc(i) {
+  const l = LOCS[i], s = locStatus(l), today = new Date().getDay();
+  const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const maps = "https://maps.apple.com/?q=" + encodeURIComponent(l.addr + ", CT");
+  openSheet("", `
+    <div class="loc-hero"><h2>${BRAND.name} ${l.name}</h2><div class="lh-sub">${l.addr} · ${l.dist.toFixed(1)} mi</div>
+      <div class="r-meta" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px;color:var(--label2)"><span class="pill ${s.cls}">${s.txt}</span>${s.sub}</div></div>
+    <div class="actions">
+      <a href="${maps}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 3 3 7.5Z"/></svg>Directions</a>
+      <button data-copy="${BRAND.phone}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 3.5 9 3l1.8 4.3-2 1.6a11 11 0 0 0 6.3 6.3l1.6-2L21 15l-.5 2.4A2 2 0 0 1 18.6 19 15.6 15.6 0 0 1 5 5.4a2 2 0 0 1 1.6-1.9Z"/></svg>Call</button>
+      <button data-home="${i}" ${l.home ? "disabled style=\"opacity:.5\"" : ""}><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2.5 11h2.8v9h5v-6h3.4v6h5v-9h2.8Z"/></svg>${l.home ? "Home" : "Set as home"}</button>
+    </div>
+    <div class="cap">Services</div>
+    <div class="chips">${SERVICES.slice(0, i === 3 ? 3 : 5).map(sv => `<span class="chip">${check}${sv}</span>`).join("")}</div>
+    <div class="cap">Hours</div>
+    <div class="group hours">${days.map((d, k) => `<div class="row ${k === today ? "today" : ""}"><span class="r-main"><div class="r-title">${d}</div></span><span class="r-val">${fmtH(l.open[0])} – ${fmtH(k === 0 ? l.open[1] - 2 : l.open[1])}</span></div>`).join("")}</div>
+    <div class="foot">Phone ${BRAND.phone}</div>`);
+}
+
+function openPlanConfirm(id) {
+  const p = PLANS.find(x => x.id === id), cur = PLANS.find(x => x.id === state.plan), up = p.price > cur.price;
+  const diff = Math.abs(p.price - cur.price).toFixed(2);
+  openSheet("", `
+    <div class="confirm-hero"><div class="ch-ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c-.3 0-.6.2-.8.4C9.6 5 5.5 10.4 5.5 14.5a6.5 6.5 0 0 0 13 0c0-4.1-4.1-9.5-5.7-11.6a1 1 0 0 0-.8-.4Z"/></svg></div>
+      <h2>${up ? "Upgrade" : "Switch"} to ${p.name}?</h2>
+      <p>${up ? `You'll get ${p.feats.filter((f, k) => f[1] && !cur.feats[k][1]).map(f => f[0].toLowerCase()).join(" and ")} starting today.` : `You'll keep ${cur.name} benefits until your renewal date.`}</p></div>
+    <div class="group" style="margin-top:18px">
+      <div class="row"><span class="r-main"><div class="r-title">${p.name} Monthly</div></span><span class="r-val">$${p.price.toFixed(2)}/mo</span></div>
+      <div class="row"><span class="r-main"><div class="r-title">${up ? "Due today (prorated)" : "Monthly savings"}</div></span><span class="r-val">$${up ? (diff * 29 / 31).toFixed(2) : diff}</span></div>
+      <div class="row"><span class="r-main"><div class="r-title">Pay with</div></span><span class="r-val">${$("#payVal").textContent}</span></div>
+    </div>
+    <div class="sheet-cta"><button class="btn primary" id="confirmPlan">Confirm ${up ? "upgrade" : "change"}</button><button class="btn plain" id="cancelPlan">Not now</button></div>`,
+    { after: () => {
+      $("#confirmPlan").onclick = () => { state.plan = id; renderPlans(); closeSheet(); toast("You're on " + p.name); };
+      $("#cancelPlan").onclick = closeSheet;
+    } });
+}
+
+const SHEETS = {
+  profile: () => openSheet("Personal information", `
+    <form id="profForm" style="margin-top:8px">
+      <div class="group">
+        <div class="field"><label for="fFirst">First name</label><input id="fFirst" value="${MEMBER.first}"></div>
+        <div class="field"><label for="fLast">Last name</label><input id="fLast" value="${MEMBER.last}"></div>
+        <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" value="${MEMBER.email}"></div>
+        <div class="field"><label for="fPhone">Phone</label><input id="fPhone" type="tel" value="${MEMBER.phone}"></div>
+      </div>
+      <div class="sheet-cta"><button class="btn primary" type="submit">Save</button></div>
+    </form>`, { after: () => $("#profForm").onsubmit = e => {
+      e.preventDefault();
+      MEMBER.first = $("#fFirst").value.trim() || MEMBER.first; MEMBER.last = $("#fLast").value.trim() || MEMBER.last;
+      MEMBER.email = $("#fEmail").value.trim() || MEMBER.email; MEMBER.phone = $("#fPhone").value.trim() || MEMBER.phone;
+      syncProfile(); closeSheet(); toast("Saved");
+    } }),
+  "help-text": () => openSheet("Text us", `
+    <div class="confirm-hero"><p>Text our team any time between 7 AM and 8 PM. Most replies arrive within 5 minutes.</p></div>
+    <div class="group" style="margin-top:16px"><div class="row"><span class="r-main"><div class="r-title" style="font-variant-numeric:tabular-nums">${BRAND.sms}</div></span><button class="r-val" style="color:var(--accent)" data-copy="${BRAND.sms}">Copy</button></div></div>`),
+  "help-call": () => openSheet("Call support", `
+    <div class="confirm-hero"><p>Talk to someone at the wash, 7 AM to 8 PM every day.</p></div>
+    <div class="group" style="margin-top:16px"><div class="row"><span class="r-main"><div class="r-title" style="font-variant-numeric:tabular-nums">${BRAND.phone}</div></span><button class="r-val" style="color:var(--accent)" data-copy="${BRAND.phone}">Copy</button></div></div>`),
+  howto: () => openSheet("How your pass works", `
+    <div class="group" style="margin-top:8px">
+      ${[["Pull up to the pay station","Your plan works at every location."],["Open the app to Pass","The scan code is the first thing you see."],["Hold it to the scanner","The gate opens and your wash starts. No card needed."]].map((s, k) => `<div class="row icon-row"><span class="ico" style="background:var(--accent);font-weight:700;font-size:15px">${k + 1}</span><span class="r-main"><div class="r-title">${s[0]}</div><div class="r-sub" style="white-space:normal">${s[1]}</div></span></div>`).join("")}
+    </div>`),
+  signout: () => openSheet("", `
+    <div class="confirm-hero"><h2>Sign out?</h2><p>Your membership stays active. Sign back in any time to see your pass.</p></div>
+    <div class="sheet-cta"><button class="btn plain" style="color:var(--red)" id="soYes">Sign Out</button><button class="btn plain" id="soNo">Cancel</button></div>`,
+    { after: () => { $("#soYes").onclick = () => { closeSheet(); setTimeout(() => openOnboard("welcome"), 250); }; $("#soNo").onclick = closeSheet; } }),
+};
+
+/* ---- Global click delegation ---- */
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-loc],[data-go],[data-plan],[data-sheet],[data-toast],[data-home],[data-copy],.switch");
+  if (!t) return;
+  if (t.matches(".switch")) { const on = t.getAttribute("aria-checked") !== "true"; t.setAttribute("aria-checked", on); return; }
+  if (t.dataset.copy) {
+    const txt = t.dataset.copy;
+    (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast("Copied " + txt)).catch(() => toast(txt));
+    return;
+  }
+  if (t.dataset.home) { LOCS.forEach((l, k) => l.home = k === +t.dataset.home); renderHome(); renderLocs(); drawMap(); closeSheet(); toast("Home location updated"); return; }
+  if (t.dataset.loc !== undefined) return openLoc(+t.dataset.loc);
+  if (t.dataset.go) return show(t.dataset.go);
+  if (t.dataset.plan) return openPlanConfirm(t.dataset.plan);
+  if (t.dataset.sheet) return SHEETS[t.dataset.sheet]();
+  if (t.dataset.toast) return toast(t.dataset.toast + " opens here");
+});
+
+/* clock */
+(function tick() { const d = new Date(); $("#clock").textContent = (d.getHours() % 12 || 12) + ":" + String(d.getMinutes()).padStart(2, "0"); setTimeout(tick, 15000); })();
+const renewD = new Date(2026, 11, 7);
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", drawMap);
+new MutationObserver(drawMap).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+addEventListener("resize", drawMap);
+
+
+/* ---- Tab lens ---- */
+function moveLens() {
+  const b = $('.tabbar button[aria-selected="true"]'), lens = $("#lens");
+  if (!b || !b.offsetWidth) return;
+  lens.style.left = b.offsetLeft + "px"; lens.style.width = b.offsetWidth + "px";
+}
+addEventListener("resize", moveLens);
+
+/* ---- 3D tilt on the pass ---- */
+(function tilt() {
+  const card = $("#passCard");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  card.addEventListener("pointermove", e => {
+    const r = card.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+    card.classList.add("tilting");
+    card.style.transform = `perspective(900px) rotateX(${(.5 - py) * 12}deg) rotateY(${(px - .5) * 16}deg) scale(1.015)`;
+    card.style.setProperty("--gx", px * 100 + "%"); card.style.setProperty("--gy", py * 100 + "%");
+  });
+  const reset = () => { card.classList.remove("tilting"); card.style.transform = ""; card.style.removeProperty("--gx"); card.style.removeProperty("--gy"); };
+  card.addEventListener("pointerleave", reset); card.addEventListener("pointercancel", reset);
+  // a small intro wobble so the depth is obvious on first view
+  setTimeout(() => { card.style.transform = "perspective(900px) rotateX(6deg) rotateY(-9deg)"; setTimeout(() => card.style.transform = "", 650); }, 500);
+})();
+
+/* ---- Wallets ---- */
+const UA = navigator.userAgent;
+const DEVICE = /Android/i.test(UA) ? (/SamsungBrowser|SM-[A-Z]/.test(UA) ? "samsung" : "google") : /iPhone|iPad|Macintosh/.test(UA) ? "apple" : null;
+const WALLETS = [
+  { id: "apple", name: "Apple Wallet", sub: "iPhone and Apple Watch", bg: "#111", fg: "#fff" },
+  { id: "google", name: "Google Wallet", sub: "Android phones and Wear OS", bg: "#fff", fg: "#1A73E8", ring: true },
+  { id: "samsung", name: "Samsung Wallet", sub: "Galaxy phones and watches", bg: "#1428A0", fg: "#fff" },
+].sort((a, b) => (b.id === DEVICE) - (a.id === DEVICE));
+const walletGlyph = '<svg viewBox="0 0 30 22" fill="none"><rect x="1" y="1" width="28" height="20" rx="5" stroke="currentColor" stroke-width="2"/><path d="M1.5 7.5h27" stroke="currentColor" stroke-width="2"/><rect x="19" y="11.5" width="6" height="4" rx="1.6" fill="currentColor"/></svg>';
+$("#walletLabel").textContent = DEVICE ? "Add to " + WALLETS[0].name : "Add to Wallet";
+
+function syncWalletUI() {
+  const n = state.wallets.size;
+  $("#inWallet").innerHTML = n ? ' · <span class="in-wallet">In ' + (n === 1 ? WALLETS.find(w => state.wallets.has(w.id)).name : n + " wallets") + "</span>" : "";
+  $("#walletLabel").textContent = n ? "Add to another wallet" : DEVICE ? "Add to " + WALLETS[0].name : "Add to Wallet";
+}
+
+function openWallet() {
+  const cur = PLANS.find(p => p.id === state.plan);
+  openSheet("Add to Wallet", `
+    <div class="wpass" id="wpass">
+      <div class="wp-top"><div class="wordmark" style="font-size:17px"><span class="wm-mark" style="width:24px;height:24px;border-radius:8px">${dropIco.replace('<svg ', '<svg width="13" height="13" ')}</span>${BRAND.name}</div>
+        <div style="text-align:right"><div class="wp-l">Plan</div><div class="wp-v">${cur.name}</div></div></div>
+      <div class="wp-f"><div><div class="wp-l">Member</div><div class="wp-v">${MEMBER.first} ${MEMBER.last}</div></div>
+        <div style="text-align:right"><div class="wp-l">Renews</div><div class="wp-v">Dec 7</div></div></div>
+      <div class="wp-qr"><div class="qr-box" id="qrWallet"></div><div class="member-no">${$("#memberNo").textContent}</div></div>
+    </div>
+    <div class="foot" style="text-align:center;padding:14px 32px 0">The pass shows up on your lock screen when you pull into a ${BRAND.name} location, and updates when your plan changes.</div>
+    <div class="cap">Choose a wallet</div>
+    <div class="group">${WALLETS.map(w => `
+      <div class="row icon-row wallet-opt" style="--inset:68px">
+        <span class="ico" style="background:${w.bg};color:${w.fg};${w.ring ? "box-shadow:inset 0 0 0 1px rgba(0,0,0,.1),0 2px 5px -1px rgba(0,0,0,.2)" : ""}">${walletGlyph}</span>
+        <span class="r-main"><div class="r-title">${w.name}${w.id === DEVICE ? '<span class="here">This device</span>' : ""}</div><div class="r-sub">${w.sub}</div></span>
+        <button class="add-pill ${state.wallets.has(w.id) ? "done" : ""}" data-wallet="${w.id}">${state.wallets.has(w.id) ? "Added" : "Add"}</button>
+      </div>`).join("")}</div>
+    <div class="foot">Prototype: in the live app each button hands the pass to that wallet app on the phone.</div>`,
+    { after: () => makeQR($("#qrWallet"), 112) });
+}
+$("#addWallet").onclick = openWallet;
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-wallet]"); if (!b || b.classList.contains("done")) return;
+  const w = WALLETS.find(x => x.id === b.dataset.wallet);
+  const card = $("#wpass"); card.classList.remove("drop"); void card.offsetWidth; card.classList.add("drop");
+  b.textContent = "Adding…";
+  setTimeout(() => {
+    state.wallets.add(w.id); b.textContent = "Added"; b.classList.add("done"); syncWalletUI(); toast("Added to " + w.name);
+    card.classList.remove("drop");
+  }, 900);
+});
+
+renderHome(); renderLocs(); renderPlans();
+show(location.hash.slice(1) || "pass", false);
+
+/* ================= Onboarding logic ================= */
+const STEPS = ["name", "contact", "verify", "vehicle", "plan", "payment"];
+const SU = { plan: "deluxe" };
+let obCur = "welcome";
+const digits = v => v.replace(/\D/g, "");
+const fmtPhone = v => { const d = digits(v).slice(0, 10); return d.length < 4 ? d : d.length < 7 ? `(${d.slice(0,3)}) ${d.slice(3)}` : `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`; };
+const cardBrand = n => /^3[47]/.test(n) ? "AMEX" : /^4/.test(n) ? "VISA" : /^(5[1-5]|2[2-7])/.test(n) ? "MASTERCARD" : /^6/.test(n) ? "DISCOVER" : "";
+const brandName = b => ({ AMEX: "Amex", VISA: "Visa", MASTERCARD: "Mastercard", DISCOVER: "Discover" })[b] || "Card";
+const fmtCard = v => { const d = digits(v); if (/^3[47]/.test(d)) { const x = d.slice(0, 15); return [x.slice(0,4), x.slice(4,10), x.slice(10)].filter(Boolean).join(" "); } return d.slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1 "); };
+const luhn = n => { let s = 0, alt = false; for (let i = n.length - 1; i >= 0; i--) { let x = +n[i]; if (alt) { x *= 2; if (x > 9) x -= 9; } s += x; alt = !alt; } return n.length >= 13 && s % 10 === 0; };
+const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+function err(id, msg, fields = []) {
+  $("#" + id).textContent = msg || "";
+  $$(".field.bad", $("#" + id).closest("form")).forEach(f => f.classList.remove("bad"));
+  fields.forEach(f => $("#" + f).closest(".field").classList.add("bad"));
+  if (fields[0]) $("#" + fields[0]).focus();
+  return !msg;
+}
+
+function openOnboard(page = "welcome") { $("#onboard").classList.add("open"); $(".tabbar").inert = true; obGo(page, "fwd"); }
+function obGo(page, dir = "fwd") {
+  obCur = page;
+  $$(".ob-page").forEach(p => { p.hidden = p.dataset.page !== page; });
+  const pg = $(`.ob-page[data-page="${page}"]`);
+  pg.classList.remove("in-fwd", "in-back"); void pg.offsetWidth; pg.classList.add("in-" + dir); pg.scrollTop = 0;
+  const i = STEPS.indexOf(page);
+  $("#obTop").hidden = page === "welcome" || page === "done";
+  $("#obProg").style.visibility = i < 0 ? "hidden" : "visible";
+  $("#obFill").hidden = i < 0;
+  $("#obBar").style.width = i < 0 ? "0" : ((i + 1) / STEPS.length * 100) + "%";
+  if (page === "verify") { $("#vPhone").textContent = $("#suPhone").value; setTimeout(() => $("#otp0").focus(), 350); }
+  if (page === "plan") renderPick();
+  if (page === "payment") { renderSummary(); updateCard(); }
+  if (page === "done") $("#doneGo").focus();
+}
+$("#obBack").onclick = () => { const i = STEPS.indexOf(obCur); obGo(i > 0 ? STEPS[i - 1] : "welcome", "back"); };
+document.addEventListener("click", e => { const b = e.target.closest("[data-ob]"); if (b) obGo(b.dataset.ob, "fwd"); });
+
+/* sign in */
+$("#fSignin").onsubmit = e => {
+  e.preventDefault();
+  const em = $("#siEmail").value.trim();
+  if (!emailOk(em)) return err("siErr", "Enter the email address you signed up with.", ["siEmail"]);
+  if (!$("#siPw").value) return err("siErr", "Enter your password.", ["siPw"]);
+  err("siErr", ""); closeOnboard(); toast("Signed in");
+};
+$("#siForgot").onclick = () => { const em = $("#siEmail").value.trim(); if (!emailOk(em)) return err("siErr", "Enter your email first, then tap Forgot password.", ["siEmail"]); err("siErr", ""); toast("Reset link sent to " + em); };
+
+/* steps */
+$("#fName").onsubmit = e => { e.preventDefault();
+  if (!$("#suFirst").value.trim()) return err("nameErr", "Enter your first name.", ["suFirst"]);
+  if (!$("#suLast").value.trim()) return err("nameErr", "Enter your last name.", ["suLast"]);
+  err("nameErr", ""); obGo("contact"); };
+$("#suPhone").addEventListener("input", e => e.target.value = fmtPhone(e.target.value));
+$("#fContact").onsubmit = e => { e.preventDefault();
+  if (!emailOk($("#suEmail").value.trim())) return err("contactErr", "Enter an email like name@example.com.", ["suEmail"]);
+  if (digits($("#suPhone").value).length !== 10) return err("contactErr", "Enter a 10-digit mobile number.", ["suPhone"]);
+  if ($("#suPw").value.length < 8) return err("contactErr", "Use at least 8 characters for your password.", ["suPw"]);
+  err("contactErr", ""); $$("#otp input").forEach(i => i.value = ""); obGo("verify"); };
+
+const otps = $$("#otp input");
+otps.forEach((inp, k) => {
+  inp.addEventListener("input", () => { inp.value = digits(inp.value).slice(-1); if (inp.value && otps[k + 1]) otps[k + 1].focus(); if (otps.every(i => i.value)) $("#fVerify").requestSubmit(); });
+  inp.addEventListener("keydown", e => { if (e.key === "Backspace" && !inp.value && otps[k - 1]) otps[k - 1].focus(); });
+  inp.addEventListener("paste", e => { const d = digits(e.clipboardData.getData("text")).slice(0, 6); if (!d) return; e.preventDefault(); otps.forEach((o, j) => o.value = d[j] || ""); (otps[d.length] || otps[5]).focus(); if (d.length === 6) $("#fVerify").requestSubmit(); });
+});
+$("#resend").onclick = () => toast("New code sent");
+$("#fVerify").onsubmit = e => { e.preventDefault();
+  if (!otps.every(i => i.value)) return err("otpErr", "Enter all 6 digits from the text message.");
+  err("otpErr", ""); obGo("vehicle"); };
+
+$("#fVehicle").onsubmit = e => { e.preventDefault();
+  if (!$("#suMake").value.trim()) return err("vehErr", "Enter the make and model, like Honda Civic.", ["suMake"]);
+  if ($("#suPlate").value.replace(/\s/g, "").length < 2) return err("vehErr", "Enter your license plate.", ["suPlate"]);
+  err("vehErr", ""); obGo("plan"); };
+
+function renderPick() {
+  const blurbs = { basic: "Exterior wash and spot-free rinse", deluxe: "Adds undercarriage and rust guard", ultimate: "Adds ceramic shield and tire shine" };
+  $("#pick").innerHTML = PLANS.map(p => `<input type="radio" name="plan" id="pk-${p.id}" value="${p.id}" ${SU.plan === p.id ? "checked" : ""}>
+    <label for="pk-${p.id}"><span class="radio"></span><span><div class="pn">${p.name}${p.id === "deluxe" ? '<span class="pop">Most popular</span>' : ""}</div><div class="pd">${blurbs[p.id]}</div></span>
+    <span class="pp">$${p.price.toFixed(2)}<small>per month</small></span></label>`).join("");
+}
+$("#pick").addEventListener("change", e => SU.plan = e.target.value);
+$("#fPlan").onsubmit = e => { e.preventDefault(); obGo("payment"); };
+
+function renderSummary() {
+  const p = PLANS.find(x => x.id === SU.plan);
+  $("#summary").innerHTML = `
+    <div class="row"><span class="r-main"><div class="r-title">${p.name} Monthly</div></span><span class="r-val">$${p.price.toFixed(2)}</span></div>
+    <div class="row"><span class="r-main"><div class="r-title">CT sales tax</div></span><span class="r-val">$${(p.price * .0635).toFixed(2)}</span></div>
+    <div class="row tot"><span class="r-main"><div class="r-title">Due today</div></span><span class="r-val">$${(p.price * 1.0635).toFixed(2)}</span></div>`;
+  $("#payBtn").textContent = `Start ${p.name} · $${(p.price * 1.0635).toFixed(2)}`;
+}
+function updateCard() {
+  const n = digits($("#cNum").value), b = cardBrand(n);
+  $("#ccBrand").textContent = b;
+  const amex = /^3[47]/.test(n), len = amex ? 15 : 16, f = (n + "•".repeat(len)).slice(0, len);
+  $("#ccNum").textContent = amex ? [f.slice(0,4), f.slice(4,10), f.slice(10)].join(" ") : f.replace(/(.{4})(?=.)/g, "$1 ");
+  $("#ccName").textContent = (($("#suFirst").value + " " + $("#suLast").value).trim() || "Your name");
+  $("#ccExp").textContent = $("#cExp").value || "MM/YY";
+  $("#ccCvc").textContent = $("#cCvc").value || "•••";
+}
+$("#cNum").addEventListener("input", e => { e.target.value = fmtCard(e.target.value); updateCard(); });
+$("#cExp").addEventListener("input", e => { let d = digits(e.target.value).slice(0, 4); if (d.length === 1 && +d > 1) d = "0" + d; e.target.value = d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d; updateCard(); });
+$("#cCvc").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0, 4); updateCard(); });
+$("#cZip").addEventListener("input", e => e.target.value = digits(e.target.value).slice(0, 5));
+$("#cCvc").addEventListener("focus", () => $("#cc").classList.add("flip"));
+$("#cCvc").addEventListener("blur", () => $("#cc").classList.remove("flip"));
+
+$("#fPay").onsubmit = e => { e.preventDefault();
+  const n = digits($("#cNum").value);
+  if (!luhn(n)) return err("payErr", "That card number isn't valid. Check the digits, or use 4242 4242 4242 4242.", ["cNum"]);
+  const [mm, yy] = $("#cExp").value.split("/").map(Number), now = new Date();
+  if (!mm || mm > 12 || !yy || (2000 + yy) * 12 + mm < now.getFullYear() * 12 + now.getMonth() + 1) return err("payErr", "Enter an expiry date that hasn't passed, like 08/29.", ["cExp"]);
+  if ($("#cCvc").value.length < 3) return err("payErr", "Enter the 3-digit code on the back of the card.", ["cCvc"]);
+  if ($("#cZip").value.length !== 5) return err("payErr", "Enter the 5-digit billing ZIP code.", ["cZip"]);
+  if (!$("#cAgree").checked) return err("payErr", "Check the box to agree to monthly billing.");
+  err("payErr", "");
+  const btn = $("#payBtn"); btn.disabled = true; btn.textContent = "Processing…";
+  setTimeout(() => { btn.disabled = false; finishSignup(n); }, 900);
+};
+
+function finishSignup(cardNum) {
+  MEMBER.first = $("#suFirst").value.trim(); MEMBER.last = $("#suLast").value.trim();
+  MEMBER.email = $("#suEmail").value.trim(); MEMBER.phone = $("#suPhone").value;
+  MEMBER.id = String(100000 + Math.floor(Math.random() * 900000));
+  state.plan = SU.plan; state.wallets.clear();
+  $("#memberNo").textContent = MEMBER.id.replace(/(\d{3})(?=\d)/g, "$1 ");
+  $("#payVal").textContent = brandName(cardBrand(cardNum)) + " •• " + cardNum.slice(-4);
+  $("#vehName").textContent = $("#suMake").value.trim();
+  $("#vehSub").textContent = $("#suColor").value.trim() || "Added today";
+  $("#vehPlate").textContent = $("#suState").value + " " + $("#suPlate").value.trim().toUpperCase();
+  syncProfile(); setGreet(); renderPlans(); syncWalletUI(); makeQR($("#qrSmall"), 168);
+  const p = PLANS.find(x => x.id === SU.plan);
+  $("#doneTitle").textContent = "You're all set, " + MEMBER.first;
+  $("#doneText").textContent = `Your ${p.name} membership is active. Scan your pass at any ${BRAND.name} gate, or add it to your phone's wallet.`;
+  obGo("done");
+}
+$("#doneGo").onclick = () => { closeOnboard(); show("pass"); setTimeout(() => toast("Welcome to " + BRAND.name), 300); };
+function closeOnboard() { $("#onboard").classList.remove("open"); $(".tabbar").inert = false; requestAnimationFrame(moveLens); }
+
+/* demo autofill */
+const EXAMPLE = {
+  name: { suFirst: "Jordan", suLast: "Lee" },
+  contact: { suEmail: "jordan.lee@example.com", suPhone: "(203) 555-0147", suPw: "washday2026" },
+  verify: { otp0: "4", otp1: "8", otp2: "2", otp3: "9", otp4: "1", otp5: "6" },
+  vehicle: { suMake: "Honda CR-V", suPlate: "AK 52193", suColor: "Blue" },
+  payment: { cNum: "4242 4242 4242 4242", cExp: "08/29", cCvc: "123", cZip: "06706" },
+};
+$("#obFill").onclick = () => {
+  const ex = EXAMPLE[obCur]; if (!ex) return;
+  Object.entries(ex).forEach(([id, v]) => { $("#" + id).value = v; });
+  if (obCur === "payment") { $("#cAgree").checked = true; updateCard(); }
+};
+
+makeQR($("#qrHero"), 120);
+openOnboard("welcome");
+
+</script>
+
+<script>
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+</script>
+</body>
+</html>
