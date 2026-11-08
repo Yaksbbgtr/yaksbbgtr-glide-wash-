@@ -1,14 +1,14 @@
 {
-  "name": "Glide Car Wash",
-  "short_name": "Glide",
-  "description": "Your unlimited car wash pass.",
+  "name": "Mr. Touchless Car Wash",
+  "short_name": "Mr. Touchless",
+  "description": "Your Mr. Touchless monthly wash pass.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F2F2F7",
-  "theme_color": "#0A5BE0",
+  "theme_color": "#142C4E",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-light-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-light-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

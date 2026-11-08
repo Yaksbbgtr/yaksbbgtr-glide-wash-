@@ -1,6 +1,6 @@
-# Glide Car Wash — app concept
+# Mr. Touchless — app concept
 
-An iOS-style redesign of a car wash membership app: sign-up, wash pass with QR code, Add to Wallet, locations, plans and account. It is a clickable prototype; nothing is sent to a server.
+An unofficial iOS-style redesign concept for the Mr. Touchless Car Wash app (not affiliated with or endorsed by Mr. Touchless): sign-up, wash pass with QR code, Add to Wallet, locations, plans and account. It is a clickable prototype; nothing is sent to a server.
 
 **Live app:** https://yaksbbgtr.github.io/yaksbbgtr-glide-wash-/
 
@@ -13,6 +13,6 @@ An iOS-style redesign of a car wash membership app: sign-up, wash pass with QR c
 - `index.html` — the whole app.
 - `manifest.webmanifest` — app name, icon and full-screen setting for home-screen installs.
 - `sw.js` — lets the app open without internet.
-- `icon-*.png`, `apple-touch-icon.png` — app icons.
+- `icon-light-*.png`, `icon-dark-*.png` — app icons for light and dark mode (1024 px masters included).
 
-To rebrand, edit the `BRAND` line near the top of the script in `index.html`.
+The card step only accepts the test card 4242 4242 4242 4242; nothing is sent or saved.
