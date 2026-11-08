@@ -196,6 +196,8 @@ button.row:active { background: var(--fill); }
 .tile .t-v { font-family: var(--font-round); font-size: 28px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
 .tile .t-v small { font-size: 15px; color: var(--label2); font-weight: 600; margin-left: 2px; }
 .tile .t-s { font-size: 13px; color: var(--label2); }
+.meter { height: 6px; border-radius: 99px; background: var(--fill); overflow: hidden; margin: 2px 0 1px; }
+.meter i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #13A6D6, var(--accent)); transition: width .5s; }
 
 .wash-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; flex: none; }
 .wash-ico svg { width: 20px; height: 20px; }
@@ -622,12 +624,12 @@ button.row:active { background: var(--fill); }
           <div class="wallet-row"><button class="wallet-btn" id="addWallet">
             <svg class="wallet-glyph" viewBox="0 0 30 22" fill="none"><rect x="1" y="1" width="28" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/><path d="M1.5 7.5h27" stroke="currentColor" stroke-width="1.8"/><rect x="19" y="11.5" width="6" height="4" rx="1.6" fill="currentColor"/></svg>
             <span id="walletLabel">Add to Wallet</span></button></div>
-          <div class="status-line"><span class="dot"></span><span>Active · Renews <span id="renew1">Dec 7</span><span id="inWallet"></span></span></div>
+          <div class="status-line"><span class="dot"></span><span>Active · <span id="leftTxt">8 washes left this month</span><span id="inWallet"></span></span></div>
 
           <div class="section-h"><h3>This month</h3></div>
           <div class="tiles">
-            <div class="tile"><span class="t-l">Washes</span><span class="t-v">3<small>/ Unlimited</small></span><span class="t-s">Last on Nov 6</span></div>
-            <div class="tile"><span class="t-l">You saved</span><span class="t-v">$15<small>.05</small></span><span class="t-s">vs. $15 single washes</span></div>
+            <div class="tile"><span class="t-l">Washes left</span><span class="t-v"><span id="leftNum">8</span><small>of 10</small></span><span class="meter" aria-hidden="true"><i id="leftBar"></i></span><span class="t-s" id="lastWash">Last on Nov 8</span></div>
+            <div class="tile"><span class="t-l">Resets</span><span class="t-v" style="font-size:24px;line-height:34px">Dec 7</span><span class="t-s">Back to 10 washes</span></div>
           </div>
 
           <div class="section-h"><h3>Home location</h3><button class="link" data-go="locations">See all</button></div>
@@ -672,11 +674,11 @@ button.row:active { background: var(--fill); }
           <div class="plan-card">
             <div class="ring">
               <svg viewBox="0 0 92 92"><circle cx="46" cy="46" r="40" fill="none" stroke="var(--fill)" stroke-width="9"/><circle id="ringArc" cx="46" cy="46" r="40" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="100"/></svg>
-              <div class="rc"><b>29</b><span>days left</span></div>
+              <div class="rc"><b id="ringNum">8</b><span>washes left</span></div>
             </div>
             <div>
               <h4 id="curPlanName">Basic Monthly</h4>
-              <p><span id="curPlanPrice">$29.95</span> / month · 1 vehicle<br>Renews <span id="renew2">Dec 7, 2026</span></p>
+              <p><span id="curPlanPrice">$29.95</span> / month · 10 washes · 1 vehicle<br>Renews <span id="renew2">Dec 7, 2026</span></p>
             </div>
           </div>
 
@@ -749,11 +751,11 @@ button.row:active { background: var(--fill); }
         <!-- welcome -->
         <section class="ob-page welcome nobar" data-page="welcome">
           <div class="hero-stage"><div class="hero-pass rim"><span class="glare"></span>
-            <div class="p-top" style="display:flex;justify-content:space-between;align-items:center"><div class="wordmark" style="font-size:17px"><span class="wm-mark" style="width:24px;height:24px;border-radius:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5c-.3 0-.6.2-.8.4C9.6 5 5.5 10.4 5.5 14.5a6.5 6.5 0 0 0 13 0c0-4.1-4.1-9.5-5.7-11.6a1 1 0 0 0-.8-.4Z"/></svg></span><span class="brand-name">Glide</span></div><span class="plan-chip" style="font-size:10px">Unlimited</span></div>
+            <div class="p-top" style="display:flex;justify-content:space-between;align-items:center"><div class="wordmark" style="font-size:17px"><span class="wm-mark" style="width:24px;height:24px;border-radius:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5c-.3 0-.6.2-.8.4C9.6 5 5.5 10.4 5.5 14.5a6.5 6.5 0 0 0 13 0c0-4.1-4.1-9.5-5.7-11.6a1 1 0 0 0-.8-.4Z"/></svg></span><span class="brand-name">Glide</span></div><span class="plan-chip" style="font-size:10px">10 / month</span></div>
             <div class="qr-panel"><div class="qr-box" id="qrHero"></div></div>
           </div></div>
           <div class="wm-big"><span class="brand-name">Glide</span> Car Wash</div>
-          <h1>Unlimited washes. One scan at the gate.</h1>
+          <h1>10 washes a month. One scan at the gate.</h1>
           <p class="lede">Join in about two minutes. Your pass works at every location, and you can cancel any time.</p>
           <div class="ob-cta" style="margin-top:6px">
             <button class="btn primary" data-ob="name">Create account</button>
@@ -844,7 +846,7 @@ button.row:active { background: var(--fill); }
         <section class="ob-page" data-page="plan" hidden>
           <div class="ob-step">Step 5 of 6</div>
           <h1>Pick your plan</h1>
-          <p class="lede">Wash as often as you like. Switch plans any time.</p>
+          <p class="lede">Every plan includes up to 10 washes a month. Switch plans any time.</p>
           <form id="fPlan" novalidate>
             <div class="pick" id="pick"></div>
             <div class="ob-cta"><button class="btn primary" type="submit">Continue</button></div>
@@ -915,12 +917,15 @@ const LOCS = [
 ];
 const SERVICES = ["Touchless wash", "Free vacuums", "Tire shine", "Undercarriage rinse", "Mat cleaner"];
 const PLANS = [
-  { id: "basic", name: "Basic", price: 29.95, feats: [["Unlimited exterior wash",1],["Spot-free rinse",1],["Undercarriage + rust guard",0],["Ceramic shield + tire shine",0]] },
-  { id: "deluxe", name: "Deluxe", price: 39.95, feats: [["Unlimited exterior wash",1],["Spot-free rinse",1],["Undercarriage + rust guard",1],["Ceramic shield + tire shine",0]] },
-  { id: "ultimate", name: "Ultimate", price: 49.95, feats: [["Unlimited exterior wash",1],["Spot-free rinse",1],["Undercarriage + rust guard",1],["Ceramic shield + tire shine",1]] },
+  { id: "basic", name: "Basic", price: 29.95, feats: [["Up to 10 washes a month",1],["Spot-free rinse",1],["Undercarriage + rust guard",0],["Ceramic shield + tire shine",0]] },
+  { id: "deluxe", name: "Deluxe", price: 39.95, feats: [["Up to 10 washes a month",1],["Spot-free rinse",1],["Undercarriage + rust guard",1],["Ceramic shield + tire shine",0]] },
+  { id: "ultimate", name: "Ultimate", price: 49.95, feats: [["Up to 10 washes a month",1],["Spot-free rinse",1],["Undercarriage + rust guard",1],["Ceramic shield + tire shine",1]] },
 ];
-const HISTORY = [
-  ["Nov 6", "Waterbury", "Basic", "4:12 PM"],
+const WASH_LIMIT = 10;
+// [date, location, package, time, counts toward this billing cycle (Nov 7 – Dec 7)]
+let HISTORY = [
+  ["Nov 8", "Waterbury", "Basic", "10:20 AM", 1],
+  ["Nov 7", "Naugatuck", "Basic", "5:48 PM", 1],
   ["Nov 2", "Naugatuck", "Basic", "11:48 AM"],
   ["Oct 29", "Waterbury", "Basic", "5:30 PM"],
   ["Oct 21", "Terryville", "Basic", "9:05 AM"],
@@ -995,7 +1000,7 @@ function renderHome() {
 function washRow(h) {
   return `<div class="row"><span class="wash-ico">${dropIco}</span><span class="r-main"><div class="r-title">${h[1]}</div><div class="r-sub">${h[0]} · ${h[3]}</div></span><span class="r-val" style="font-size:15px">${h[2]}</span></div>`;
 }
-$("#recent").innerHTML = HISTORY.slice(0, 3).map(washRow).join("");
+
 
 /* ---- Locations ---- */
 function renderLocs() {
@@ -1053,10 +1058,20 @@ function renderPlans() {
   $("#curPlanName").textContent = cur.name + " Monthly";
   $("#curPlanPrice").textContent = "$" + cur.price.toFixed(2);
   $("#passPlan").textContent = cur.name;
-  $("#history").innerHTML = HISTORY.map(h => washRow([h[0], h[1], cur.name === "Basic" ? h[2] : h[2], h[3]])).join("");
+  renderUsage();
 }
-// ring: 29 of 31 days left
-(function ring() { const L = 2 * Math.PI * 40; $("#ringArc").setAttribute("stroke-dasharray", L); $("#ringArc").setAttribute("stroke-dashoffset", L * (1 - 29 / 31)); })();
+// wash allowance: 10 per billing cycle
+function renderUsage() {
+  const used = HISTORY.filter(h => h[4]).length, left = Math.max(0, WASH_LIMIT - used);
+  $("#leftNum").textContent = left; $("#ringNum").textContent = left;
+  $("#leftBar").style.width = (left / WASH_LIMIT * 100) + "%";
+  $("#leftTxt").textContent = left === 0 ? "All 10 washes used, resets Dec 7" : left + (left === 1 ? " wash" : " washes") + " left this month";
+  $("#lastWash").textContent = HISTORY.length ? "Last on " + HISTORY[0][0] : "No washes yet";
+  const L = 2 * Math.PI * 40; $("#ringArc").setAttribute("stroke-dasharray", L); $("#ringArc").setAttribute("stroke-dashoffset", L * (1 - left / WASH_LIMIT));
+  const empty = '<div class="row"><span class="r-main"><div class="r-title">No washes yet</div><div class="r-sub">Your first wash shows up here.</div></span></div>';
+  $("#recent").innerHTML = HISTORY.length ? HISTORY.slice(0, 3).map(washRow).join("") : empty;
+  $("#history").innerHTML = HISTORY.length ? HISTORY.map(washRow).join("") : empty;
+}
 
 /* ---- Navigation ---- */
 const TABS = ["pass", "locations", "membership", "account"];
@@ -1406,7 +1421,7 @@ function finishSignup(cardNum) {
   MEMBER.first = $("#suFirst").value.trim(); MEMBER.last = $("#suLast").value.trim();
   MEMBER.email = $("#suEmail").value.trim(); MEMBER.phone = $("#suPhone").value;
   MEMBER.id = String(100000 + Math.floor(Math.random() * 900000));
-  state.plan = SU.plan; state.wallets.clear();
+  state.plan = SU.plan; state.wallets.clear(); HISTORY = [];
   $("#memberNo").textContent = MEMBER.id.replace(/(\d{3})(?=\d)/g, "$1 ");
   $("#payVal").textContent = brandName(cardBrand(cardNum)) + " •• " + cardNum.slice(-4);
   $("#vehName").textContent = $("#suMake").value.trim();
