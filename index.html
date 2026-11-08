@@ -579,6 +579,11 @@ button.row:active { background: var(--fill); }
 :root[data-theme="dark"] .logo-swap .logo-l { display: none; }
 :root[data-theme="dark"] .logo-swap .logo-d { display: block; }
 .welcome .logo-swap img { height: 64px; width: auto; }
+
+/* Safari drops border-radius clipping while a card is 3D-tilted; clip-path keeps the corners round */
+.pass canvas.drops, .pass .glare { border-radius: 32px; clip-path: inset(0 round 32px); -webkit-clip-path: inset(0 round 32px); }
+.hero-pass .glare { border-radius: 28px; clip-path: inset(0 round 28px); -webkit-clip-path: inset(0 round 28px); }
+.pass, .hero-pass { isolation: isolate; -webkit-transform: translateZ(0); }
 </style>
 
 <div class="stage">
