@@ -614,13 +614,37 @@ button.row:active { background: var(--fill); }
 .tabbar.mini { transform: translateY(8px) scale(.92); }
 .tabbar.mini button { height: 44px; font-size: 0; gap: 0; }
 .tabbar.mini .lens { height: 44px; }
+
+/* ===== QA fixes ===== */
+:root { --on-accent: #FFFFFF; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --on-accent: #04223A; } }
+:root[data-theme="dark"] { --on-accent: #04223A; }
+.btn.primary, .pop, .ap-opt[aria-checked="true"] .ap-radio, .pick input:checked + label .radio::after { color: var(--on-accent); }
+.pick input:checked + label .radio::after { background: var(--on-accent); }
+/* 1. closed sheet must be fully gone, never peeking at the bottom */
+.sheet { transform: translateY(calc(100% + 60px)); transition: transform .35s cubic-bezier(.2,.8,.2,1), visibility 0s linear .35s; visibility: hidden; }
+.sheet-wrap.open .sheet { visibility: visible; transition: transform .35s cubic-bezier(.2,.8,.2,1), visibility 0s; }
+/* 2. sign-up top bar gets a frosted background so content scrolls under it cleanly */
+.ob-top { background: var(--glass-strong); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  -webkit-mask-image: linear-gradient(#000 72%, transparent); mask-image: linear-gradient(#000 72%, transparent); padding-bottom: 18px; }
+/* 5. "This device" tag sits under the wallet name */
+.wallet-opt .here { display: block; margin: 2px 0 0; }
+/* account detail sheets */
+.mini-card { margin: 6px 16px 0; aspect-ratio: 1.586; max-width: calc(100% - 32px); border-radius: 18px; color: #fff; padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between;
+  background: radial-gradient(90% 80% at 100% 0%, rgba(255,255,255,.22), transparent 55%), linear-gradient(135deg, #1C1F2A, #3A4157 60%, #22283A); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 18px 30px -16px rgba(0,0,0,.55); }
+.mini-card .mc-top { display: flex; justify-content: space-between; align-items: center; }
+.mini-card .mc-num { font: 500 18px var(--mono); letter-spacing: .1em; }
+.mini-card .chip { width: 36px; height: 27px; border-radius: 6px; background: linear-gradient(135deg, #E9D18C, #B8953E 60%, #E9D18C); }
+.mini-card .mc-brand { font: italic 800 17px var(--font); }
+.mini-card .mc-bot { display: flex; justify-content: space-between; font-size: 13px; text-transform: uppercase; }
+.badge-ok { font-size: 12px; font-weight: 600; color: var(--green); background: var(--green-soft); padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
 </style>
 
 <div class="stage">
   <aside class="pitch">
     <div class="eyebrow">Concept redesign for Mr. Touchless</div>
     <h1>The wash pass, rebuilt to feel like iOS.</h1>
-    <p>A tappable prototype. Start by creating an account (or tap Sign in), then click through the tabs, tap the pass to enlarge the code, open a location, or switch plans.</p>
+    <p>A tappable prototype. Click through the tabs or slide across the tab bar, tap the pass to enlarge the code, open a location, or switch plans. Account, then Preview sign-up screens, shows the sign-up flow.</p>
     <ul>
       <li><span><b>Sign-up in six short steps</b>: name, contact, text-code check, car, plan and card.</span></li>
       <li><span><b>Pass first.</b> The scan code opens instantly and goes full-screen white for the scanner.</span></li>
@@ -724,13 +748,13 @@ button.row:active { background: var(--fill); }
             </div>
             <div>
               <h4 id="curPlanName">Bronze Monthly</h4>
-              <p><span id="curPlanPrice">$25.00</span> / month · 10 washes · 1 vehicle<br>Renews <span id="renew2">Dec 7, 2026</span></p>
+              <p><span id="curPlanPrice">$25.00</span> / month<br>10 washes · 1 vehicle<br>Renews <span id="renew2">Dec 7, 2026</span></p>
             </div>
           </div>
 
           <div class="section-h"><h3>Plans</h3></div>
           <div class="tiers" id="tiers"></div>
-          <div class="foot">Changes take effect on your next renewal date. Cancel anytime from Account.</div>
+          <div class="foot">Upgrades start right away. Moving to a lower plan starts on your next renewal date.</div>
 
           <div class="section-h"><h3>Wash history</h3></div>
           <div class="group" id="history"></div>
@@ -751,14 +775,14 @@ button.row:active { background: var(--fill); }
           <div class="cap">Personal</div>
           <div class="group">
             <button class="row icon-row" data-sheet="profile"><span class="ico" style="background:#8E8E93"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5Z"/></svg></span><span class="r-main"><div class="r-title">Personal information</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
-            <button class="row icon-row" data-toast="Password updated"><span class="ico" style="background:#636366"><svg viewBox="0 0 24 24" fill="#fff"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#fff" stroke-width="2"/></svg></span><span class="r-main"><div class="r-title">Password &amp; security</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-sheet="password"><span class="ico" style="background:#636366"><svg viewBox="0 0 24 24" fill="#fff"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#fff" stroke-width="2"/></svg></span><span class="r-main"><div class="r-title">Password &amp; security</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
           </div>
 
           <div class="cap">Wallet &amp; vehicles</div>
           <div class="group">
-            <button class="row icon-row" data-toast="Payment methods"><span class="ico" style="background:#34C759"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18"/></svg></span><span class="r-main"><div class="r-title">Payment</div></span><span class="r-val" id="payVal">Visa •• 4821</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
-            <button class="row icon-row" data-toast="Vehicles"><span class="ico" style="background:#0A84FF"><svg viewBox="0 0 24 24" fill="#fff"><path d="M5 11 6.6 6.6A2 2 0 0 1 8.5 5.3h7a2 2 0 0 1 1.9 1.3L19 11a2 2 0 0 1 1.5 2v4a1 1 0 0 1-1 1H19a1.5 1.5 0 0 1-3 0H8a1.5 1.5 0 0 1-3 0h-.5a1 1 0 0 1-1-1v-4A2 2 0 0 1 5 11Zm1.6 0h10.8l-1.3-3.6a.7.7 0 0 0-.6-.4H8.5a.7.7 0 0 0-.6.4Z"/></svg></span><span class="r-main"><div class="r-title" id="vehName">Toyota RAV4</div><div class="r-sub" id="vehSub">Silver · 2021</div></span><span class="plate" id="vehPlate">CT 8ZK·214</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
-            <button class="row icon-row" data-toast="Receipts"><span class="ico" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">Receipts</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-sheet="payment"><span class="ico" style="background:#34C759"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18"/></svg></span><span class="r-main"><div class="r-title">Payment</div></span><span class="r-val" id="payVal">Visa •• 4821</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-sheet="vehicles"><span class="ico" style="background:#0A84FF"><svg viewBox="0 0 24 24" fill="#fff"><path d="M5 11 6.6 6.6A2 2 0 0 1 8.5 5.3h7a2 2 0 0 1 1.9 1.3L19 11a2 2 0 0 1 1.5 2v4a1 1 0 0 1-1 1H19a1.5 1.5 0 0 1-3 0H8a1.5 1.5 0 0 1-3 0h-.5a1 1 0 0 1-1-1v-4A2 2 0 0 1 5 11Zm1.6 0h10.8l-1.3-3.6a.7.7 0 0 0-.6-.4H8.5a.7.7 0 0 0-.6.4Z"/></svg></span><span class="r-main"><div class="r-title" id="vehName">Toyota RAV4</div><div class="r-sub" id="vehSub">Silver · 2021</div></span><span class="plate" id="vehPlate">CT 8ZK·214</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-sheet="receipts"><span class="ico" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">Receipts</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
           </div>
 
           <div class="cap">Appearance</div>
@@ -1187,7 +1211,7 @@ function openLoc(i) {
   const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const maps = "https://maps.apple.com/?q=" + encodeURIComponent(l.addr + ", CT");
   openSheet("", `
-    <div class="loc-hero"><h2>${BRAND.name} ${l.name}</h2><div class="lh-sub">${l.addr} · ${l.dist.toFixed(1)} mi</div>
+    <div class="loc-hero"><h2>${BRAND.name} ${l.name}</h2><div class="lh-sub">${l.addr}</div><div class="lh-sub">${l.dist.toFixed(1)} mi away</div>
       <div class="r-meta" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px;color:var(--label2)"><span class="pill ${s.cls}">${s.txt}</span>${s.sub}</div></div>
     <div class="actions">
       <a href="${maps}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 3 3 7.5Z"/></svg>Directions</a>
@@ -1207,7 +1231,7 @@ function openPlanConfirm(id) {
   openSheet("", `
     <div class="confirm-hero"><div class="ch-ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c-.3 0-.6.2-.8.4C9.6 5 5.5 10.4 5.5 14.5a6.5 6.5 0 0 0 13 0c0-4.1-4.1-9.5-5.7-11.6a1 1 0 0 0-.8-.4Z"/></svg></div>
       <h2>${up ? "Upgrade" : "Switch"} to ${p.name}?</h2>
-      <p>${up ? `You'll get ${p.feats.filter((f, k) => f[1] && !cur.feats[k][1]).map(f => f[0].toLowerCase()).join(" and ")} starting today.` : `You'll keep ${cur.name} benefits until your renewal date.`}</p></div>
+      <p>${up ? `You'll get ${p.feats.filter((f, k) => f[1] && !cur.feats[k][1]).map(f => f[0].toLowerCase()).reduce((acc, x, k, a) => acc + (k === 0 ? "" : k === a.length - 1 ? " and " : ", ") + x, "")} starting today.` : `You'll keep ${cur.name} benefits until your renewal date.`}</p></div>
     <div class="group" style="margin-top:18px">
       <div class="row"><span class="r-main"><div class="r-title">${p.name} Monthly</div></span><span class="r-val">$${p.price.toFixed(2)}/mo</span></div>
       <div class="row"><span class="r-main"><div class="r-title">${up ? "Due today (prorated)" : "Monthly savings"}</div></span><span class="r-val">$${up ? (diff * 29 / 31).toFixed(2) : diff}</span></div>
@@ -1221,6 +1245,71 @@ function openPlanConfirm(id) {
 }
 
 const SHEETS = {
+  password: () => openSheet("Password & security", `
+    <form id="pwForm" novalidate style="margin-top:8px">
+      <div class="group">
+        <div class="field"><label for="pwOld">Current password</label><input id="pwOld" type="password" autocomplete="current-password"></div>
+        <div class="field"><label for="pwNew">New password</label><input id="pwNew" type="password" placeholder="At least 8 characters" autocomplete="new-password"></div>
+        <div class="field"><label for="pwNew2">Confirm new password</label><input id="pwNew2" type="password" autocomplete="new-password"></div>
+      </div>
+      <div class="err" id="pwErr" style="padding:10px 22px 0"></div>
+      <div class="sheet-cta"><button class="btn primary" type="submit">Update password</button></div>
+    </form>`, { after: () => {
+      $("#pwForm").addEventListener("input", () => $("#pwErr").textContent = "");
+      $("#pwForm").onsubmit = e => { e.preventDefault();
+        if (!$("#pwOld").value) return $("#pwErr").textContent = "Enter your current password.";
+        if ($("#pwNew").value.length < 8) return $("#pwErr").textContent = "Use at least 8 characters for the new password.";
+        if ($("#pwNew").value !== $("#pwNew2").value) return $("#pwErr").textContent = "The two new passwords don't match.";
+        closeSheet(); toast("Password updated"); };
+    } }),
+  payment: () => {
+    const [brand, last4] = $("#payVal").textContent.split(" •• "), p = PLANS.find(x => x.id === state.plan);
+    openSheet("Payment method", `
+      <div class="mini-card"><div class="mc-top"><span class="chip"></span><span class="mc-brand">${brand.toUpperCase()}</span></div>
+        <div class="mc-num">•••• •••• •••• ${last4}</div>
+        <div class="mc-bot"><span>${MEMBER.first} ${MEMBER.last}</span><span>Default</span></div></div>
+      <div class="group" style="margin-top:16px">
+        <div class="row"><span class="r-main"><div class="r-title">Next charge</div></span><span class="r-val">$${(p.price * 1.0635).toFixed(2)} on Dec 7</span></div>
+        <div class="row"><span class="r-main"><div class="r-title">Plan</div></span><span class="r-val">${p.name} Monthly</span></div>
+      </div>
+      <form id="ccForm" novalidate>
+        <div class="cap">Replace card</div>
+        <div class="group">
+          <div class="field"><label for="rcNum">Card number</label><input id="rcNum" inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="off"></div>
+          <div class="field"><label for="rcExp">Expires</label><input id="rcExp" inputmode="numeric" placeholder="MM/YY" autocomplete="off"></div>
+        </div>
+        <div class="foot">Demo only. Don't enter a real card. Only the test card 4242 4242 4242 4242 works.</div>
+        <div class="err" id="rcErr" style="padding:8px 22px 0"></div>
+        <div class="sheet-cta"><button class="btn primary" type="submit">Save card</button></div>
+      </form>`, { after: () => {
+        $("#rcNum").addEventListener("input", e => { e.target.value = fmtCard(e.target.value); $("#rcErr").textContent = ""; });
+        $("#rcExp").addEventListener("input", e => { let d = digits(e.target.value).slice(0, 4); e.target.value = d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d; $("#rcErr").textContent = ""; });
+        $("#ccForm").onsubmit = e => { e.preventDefault();
+          const n = digits($("#rcNum").value);
+          if (n !== "4242424242424242") return $("#rcErr").textContent = "This is a demo, so only the test card 4242 4242 4242 4242 works.";
+          if (!/^(0[1-9]|1[0-2])\/\d\d$/.test($("#rcExp").value)) return $("#rcErr").textContent = "Enter the expiry date like 08/29.";
+          $("#payVal").textContent = "Visa •• " + n.slice(-4); closeSheet(); toast("Card saved"); };
+      } });
+  },
+  vehicles: () => openSheet("Vehicle", `
+    <form id="vhForm" novalidate style="margin-top:8px">
+      <div class="group">
+        <div class="field"><label for="vhMake">Make and model</label><input id="vhMake" value="${$("#vehName").textContent}"></div>
+        <div class="field"><label for="vhColor">Color and year</label><input id="vhColor" value="${$("#vehSub").textContent}"></div>
+        <div class="field"><label for="vhPlate">License plate</label><input id="vhPlate" value="${$("#vehPlate").textContent}" style="text-transform:uppercase;font-family:var(--mono)"></div>
+      </div>
+      <div class="foot">Each plan covers 1 vehicle.</div>
+      <div class="sheet-cta"><button class="btn primary" type="submit">Save vehicle</button></div>
+    </form>`, { after: () => $("#vhForm").onsubmit = e => { e.preventDefault();
+      if ($("#vhMake").value.trim()) $("#vehName").textContent = $("#vhMake").value.trim();
+      $("#vehSub").textContent = $("#vhColor").value.trim();
+      if ($("#vhPlate").value.trim()) $("#vehPlate").textContent = $("#vhPlate").value.trim().toUpperCase();
+      closeSheet(); toast("Vehicle saved"); } }),
+  receipts: () => {
+    const p = PLANS.find(x => x.id === state.plan), amt = "$" + (p.price * 1.0635).toFixed(2), card = $("#payVal").textContent;
+    const rows = ["Nov 7, 2026", "Oct 7, 2026", "Sep 7, 2026"].map(d => `<div class="row"><span class="wash-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">${p.name} Monthly</div><div class="r-sub">${d} · ${card}</div></span><span class="r-val" style="color:var(--label)">${amt}</span></div>`).join("");
+    openSheet("Receipts", `<div class="group" style="margin-top:8px">${rows}</div><div class="foot">Receipts are also emailed to ${MEMBER.email}. Amounts include CT sales tax.</div>`);
+  },
   profile: () => openSheet("Personal information", `
     <form id="profForm" style="margin-top:8px">
       <div class="group">
@@ -1549,9 +1638,14 @@ $("#obFill").onclick = () => {
   const ex = EXAMPLE[obCur]; if (!ex) return;
   Object.entries(ex).forEach(([id, v]) => { $("#" + id).value = v; });
   if (obCur === "payment") { $("#cAgree").checked = true; updateCard(); }
+  clearFormErr($(`.ob-page[data-page="${obCur}"] form`));
 };
 
 makeQR($("#qrHero"), 120);
+
+$$("#onboard form").forEach(f => f.addEventListener("input", () => clearFormErr(f)));
+function clearFormErr(f) { const e = f && f.querySelector(".err"); if (e && e.textContent) e.textContent = ""; if (f) f.querySelectorAll(".field.bad").forEach(x => x.classList.remove("bad")); }
+
 
 /* ---- Appearance ---- */
 const THEME_KEY = "appearance";
