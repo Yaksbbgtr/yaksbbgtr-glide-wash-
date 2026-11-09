@@ -638,6 +638,14 @@ button.row:active { background: var(--fill); }
 .mini-card .mc-brand { font: italic 800 17px var(--font); }
 .mini-card .mc-bot { display: flex; justify-content: space-between; font-size: 13px; text-transform: uppercase; }
 .badge-ok { font-size: 12px; font-weight: 600; color: var(--green); background: var(--green-soft); padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
+
+/* navbar-solid: crisp iOS header instead of a fading haze over the content */
+:root { --navbar-bg: rgba(246,246,249,.94); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --navbar-bg: rgba(12,12,14,.94); } }
+:root[data-theme="dark"] { --navbar-bg: rgba(12,12,14,.94); }
+.navbar.scrolled { background: var(--navbar-bg); -webkit-mask-image: none; mask-image: none; height: calc(var(--top-inset) + 44px); padding-bottom: 0;
+  -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 .5px 0 var(--sep); }
+.ob-top { background: var(--navbar-bg); -webkit-mask-image: none; mask-image: none; padding-bottom: 8px; box-shadow: 0 .5px 0 var(--sep); }
 </style>
 
 <div class="stage">
