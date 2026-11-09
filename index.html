@@ -646,6 +646,25 @@ button.row:active { background: var(--fill); }
 .navbar.scrolled { background: var(--navbar-bg); -webkit-mask-image: none; mask-image: none; height: calc(var(--top-inset) + 44px); padding-bottom: 0;
   -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 .5px 0 var(--sep); }
 .ob-top { background: var(--navbar-bg); -webkit-mask-image: none; mask-image: none; padding-bottom: 8px; box-shadow: 0 .5px 0 var(--sep); }
+
+/* Billing: next payment, autopay, pay ahead */
+.bill { margin: 6px 16px 0; padding: 18px; border-radius: 24px; background: var(--surface); box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); display: grid; gap: 4px; }
+.bill .b-l { font-size: 13px; font-weight: 600; color: var(--label2); text-transform: uppercase; letter-spacing: .04em; }
+.bill .b-amt { font: 700 40px/1.1 var(--font-round); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.bill .b-due { font-size: 15px; color: var(--label2); }
+.bill .b-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.pill.warn { color: var(--orange); background: color-mix(in srgb, var(--orange) 16%, transparent); }
+.payopts { display: grid; gap: 10px; margin: 6px 16px 0; }
+.payopts label { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 15px 16px; border-radius: 20px; background: var(--surface); box-shadow: inset 0 1px 0 var(--hi), var(--card-shadow); cursor: pointer; }
+.payopts input { position: absolute; opacity: 0; pointer-events: none; }
+.payopts .radio { width: 24px; height: 24px; border-radius: 12px; box-shadow: inset 0 0 0 2px var(--label3); display: grid; place-items: center; }
+.payopts input:checked + label { box-shadow: inset 0 0 0 2px var(--accent), var(--card-shadow); }
+.payopts input:checked + label .radio { background: var(--accent); box-shadow: none; }
+.payopts input:checked + label .radio::after { content: ""; width: 9px; height: 9px; border-radius: 5px; background: var(--on-accent); }
+.payopts input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+.payopts .po-t { font-weight: 600; font-size: 17px; }
+.payopts .po-s { font-size: 14px; color: var(--label2); margin-top: 2px; }
+.payopts .po-a { font: 700 18px var(--font-round); font-variant-numeric: tabular-nums; }
 </style>
 
 <div class="stage">
@@ -788,7 +807,7 @@ button.row:active { background: var(--fill); }
 
           <div class="cap">Wallet &amp; vehicles</div>
           <div class="group">
-            <button class="row icon-row" data-sheet="payment"><span class="ico" style="background:#34C759"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18"/></svg></span><span class="r-main"><div class="r-title">Payment</div></span><span class="r-val" id="payVal">Visa •• 4821</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+            <button class="row icon-row" data-sheet="payment"><span class="ico" style="background:#34C759"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18"/></svg></span><span class="r-main"><div class="r-title">Payment</div><div class="r-sub" id="paySub">Autopay · due Dec 7</div></span><span class="r-val" id="payVal">Visa •• 4821</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
             <button class="row icon-row" data-sheet="vehicles"><span class="ico" style="background:#0A84FF"><svg viewBox="0 0 24 24" fill="#fff"><path d="M5 11 6.6 6.6A2 2 0 0 1 8.5 5.3h7a2 2 0 0 1 1.9 1.3L19 11a2 2 0 0 1 1.5 2v4a1 1 0 0 1-1 1H19a1.5 1.5 0 0 1-3 0H8a1.5 1.5 0 0 1-3 0h-.5a1 1 0 0 1-1-1v-4A2 2 0 0 1 5 11Zm1.6 0h10.8l-1.3-3.6a.7.7 0 0 0-.6-.4H8.5a.7.7 0 0 0-.6.4Z"/></svg></span><span class="r-main"><div class="r-title" id="vehName">Toyota RAV4</div><div class="r-sub" id="vehSub">Silver · 2021</div></span><span class="plate" id="vehPlate">CT 8ZK·214</span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
             <button class="row icon-row" data-sheet="receipts"><span class="ico" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">Receipts</div></span><svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
           </div>
@@ -1272,14 +1291,31 @@ const SHEETS = {
     } }),
   payment: () => {
     const [brand, last4] = $("#payVal").textContent.split(" •• "), p = PLANS.find(x => x.id === state.plan);
-    openSheet("Payment method", `
+    const amt = monthly(), days = daysUntil(BILLING.nextDue);
+    const dueTxt = days > 1 ? `in ${days} days` : days === 1 ? "tomorrow" : days === 0 ? "today" : "overdue";
+    openSheet("Payment", `
+      <div class="bill">
+        <span class="b-l">Next payment</span>
+        <span class="b-amt">$${amt.toFixed(2)}</span>
+        <span class="b-due">Due ${fmtDate(BILLING.nextDue)} · ${dueTxt}</span>
+        ${BILLING.paidAhead ? `<span class="b-due">Paid ahead through ${fmtDate(addMonths(BILLING.nextDue, -1))}</span>` : ""}
+        <div class="b-row">
+          ${BILLING.autopay ? '<span class="pill open">Autopay on</span>' : '<span class="pill warn">Pay manually</span>'}
+          <span class="b-due" style="font-size:13px">${p.name} Monthly, tax included</span>
+        </div>
+      </div>
+      <div class="sheet-cta" style="margin-top:14px"><button class="btn primary" id="payNowBtn">Pay now or prepay</button></div>
+
+      <div class="cap">Autopay</div>
+      <div class="group">
+        <div class="row"><span class="r-main"><div class="r-title">Autopay</div><div class="r-sub" style="white-space:normal">${BILLING.autopay ? `Charges ${brand} •• ${last4} on each due date.` : "You'll get a reminder 3 days before each due date."}</div></span>
+          <button class="switch" id="autopaySw" role="switch" aria-checked="${BILLING.autopay}" aria-label="Autopay"></button></div>
+      </div>
+
+      <div class="cap">Card on file</div>
       <div class="mini-card"><div class="mc-top"><span class="chip"></span><span class="mc-brand">${brand.toUpperCase()}</span></div>
         <div class="mc-num">•••• •••• •••• ${last4}</div>
         <div class="mc-bot"><span>${MEMBER.first} ${MEMBER.last}</span><span>Default</span></div></div>
-      <div class="group" style="margin-top:16px">
-        <div class="row"><span class="r-main"><div class="r-title">Next charge</div></span><span class="r-val">$${(p.price * 1.0635).toFixed(2)} on Dec 7</span></div>
-        <div class="row"><span class="r-main"><div class="r-title">Plan</div></span><span class="r-val">${p.name} Monthly</span></div>
-      </div>
       <form id="ccForm" novalidate>
         <div class="cap">Replace card</div>
         <div class="group">
@@ -1288,8 +1324,15 @@ const SHEETS = {
         </div>
         <div class="foot">Demo only. Don't enter a real card. Only the test card 4242 4242 4242 4242 works.</div>
         <div class="err" id="rcErr" style="padding:8px 22px 0"></div>
-        <div class="sheet-cta"><button class="btn primary" type="submit">Save card</button></div>
+        <div class="sheet-cta"><button class="btn tinted" type="submit">Save card</button></div>
       </form>`, { after: () => {
+        $("#payNowBtn").onclick = openPrepay;
+        $("#autopaySw").addEventListener("click", e => {
+          e.stopPropagation();
+          BILLING.autopay = !BILLING.autopay; syncBilling();
+          toast(BILLING.autopay ? "Autopay turned on" : "Autopay turned off");
+          SHEETS.payment();
+        });
         $("#rcNum").addEventListener("input", e => { e.target.value = fmtCard(e.target.value); $("#rcErr").textContent = ""; });
         $("#rcExp").addEventListener("input", e => { let d = digits(e.target.value).slice(0, 4); e.target.value = d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d; $("#rcErr").textContent = ""; });
         $("#ccForm").onsubmit = e => { e.preventDefault();
@@ -1315,7 +1358,7 @@ const SHEETS = {
       closeSheet(); toast("Vehicle saved"); } }),
   receipts: () => {
     const p = PLANS.find(x => x.id === state.plan), amt = "$" + (p.price * 1.0635).toFixed(2), card = $("#payVal").textContent;
-    const rows = ["Nov 7, 2026", "Oct 7, 2026", "Sep 7, 2026"].map(d => `<div class="row"><span class="wash-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">${p.name} Monthly</div><div class="r-sub">${d} · ${card}</div></span><span class="r-val" style="color:var(--label)">${amt}</span></div>`).join("");
+    const rows = [...BILLING.payments, ...["Nov 7, 2026", "Oct 7, 2026", "Sep 7, 2026"].map(d => ({ date: d, label: p.name + " Monthly", amount: amt }))].map(r => `<div class="row"><span class="wash-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg></span><span class="r-main"><div class="r-title">${r.label}</div><div class="r-sub">${r.date} · ${card}</div></span><span class="r-val" style="color:var(--label)">${r.amount}</span></div>`).join("");
     openSheet("Receipts", `<div class="group" style="margin-top:8px">${rows}</div><div class="foot">Receipts are also emailed to ${MEMBER.email}. Amounts include CT sales tax.</div>`);
   },
   profile: () => openSheet("Personal information", `
@@ -1650,6 +1693,45 @@ $("#obFill").onclick = () => {
 };
 
 makeQR($("#qrHero"), 120);
+
+/* ---- Billing: next payment, autopay, pay ahead ---- */
+const BILLING = { nextDue: new Date(2026, 11, 7), autopay: true, paidAhead: 0, payments: [] };
+const monthly = () => PLANS.find(x => x.id === state.plan).price * 1.0635;
+const fmtDate = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const addMonths = (d, n) => new Date(d.getFullYear(), d.getMonth() + n, d.getDate());
+const daysUntil = d => { const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((d - t) / 864e5); };
+function syncBilling() {
+  const short = BILLING.nextDue.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  $("#paySub").textContent = (BILLING.autopay ? "Autopay" : "Manual") + " · due " + short;
+}
+function openPrepay() {
+  const m = monthly();
+  const opts = [[1, "This month's payment", "Due " + fmtDate(BILLING.nextDue)], [3, "Prepay 3 months", "Covers through " + fmtDate(addMonths(BILLING.nextDue, 2))], [6, "Prepay 6 months", "Covers through " + fmtDate(addMonths(BILLING.nextDue, 5))]];
+  openSheet("Pay now", `
+    <div class="payopts">${opts.map(([n, t, sub], k) => `<input type="radio" name="prepay" id="pp${n}" value="${n}" ${k === 0 ? "checked" : ""}>
+      <label for="pp${n}"><span class="radio"></span><span><div class="po-t">${t}</div><div class="po-s">${sub}</div></span><span class="po-a">$${(m * n).toFixed(2)}</span></label>`).join("")}</div>
+    <div class="group" style="margin-top:16px">
+      <div class="row"><span class="r-main"><div class="r-title">Pay with</div></span><span class="r-val">${$("#payVal").textContent}</span></div>
+    </div>
+    <div class="foot">Prepaying moves your next due date forward. Your 10 washes still reset every month.</div>
+    <div class="sheet-cta"><button class="btn primary" id="ppGo">Pay $${m.toFixed(2)}</button><button class="btn plain" id="ppBack">Back</button></div>`,
+    { after: () => {
+      const months = () => +$('input[name="prepay"]:checked').value;
+      $$('input[name="prepay"]').forEach(r => r.addEventListener("change", () => $("#ppGo").textContent = "Pay $" + (m * months()).toFixed(2)));
+      $("#ppBack").onclick = () => SHEETS.payment();
+      $("#ppGo").onclick = () => {
+        const n = months(), total = m * n, btn = $("#ppGo");
+        btn.disabled = true; btn.textContent = "Processing…";
+        setTimeout(() => {
+          BILLING.payments.unshift({ date: fmtDate(new Date()), label: n === 1 ? "Monthly payment" : `Prepaid ${n} months`, amount: "$" + total.toFixed(2) });
+          BILLING.nextDue = addMonths(BILLING.nextDue, n); BILLING.paidAhead += n; syncBilling();
+          closeSheet(); toast(`Paid $${total.toFixed(2)}. Next due ${BILLING.nextDue.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`);
+        }, 900);
+      };
+    } });
+}
+syncBilling();
+
 
 $$("#onboard form").forEach(f => f.addEventListener("input", () => clearFormErr(f)));
 function clearFormErr(f) { const e = f && f.querySelector(".err"); if (e && e.textContent) e.textContent = ""; if (f) f.querySelectorAll(".field.bad").forEach(x => x.classList.remove("bad")); }
