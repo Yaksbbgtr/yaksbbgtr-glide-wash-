@@ -665,6 +665,13 @@ button.row:active { background: var(--fill); }
 .payopts .po-t { font-weight: 600; font-size: 17px; }
 .payopts .po-s { font-size: 14px; color: var(--label2); margin-top: 2px; }
 .payopts .po-a { font: 700 18px var(--font-round); font-variant-numeric: tabular-nums; }
+
+/* navbar-sharp: iOS home-screen apps blur text inside a backdrop-filter layer, so the header is solid with no blur and no transform */
+:root { --navbar-solid: #F6F6F9; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --navbar-solid: #0C0C0E; } }
+:root[data-theme="dark"] { --navbar-solid: #0C0C0E; }
+.navbar.scrolled, .ob-top { background: var(--navbar-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.navbar .nb-title, .navbar.scrolled .nb-title { transform: none; transition: opacity .2s; }
 </style>
 
 <div class="stage">

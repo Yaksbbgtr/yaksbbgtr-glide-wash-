@@ -1,5 +1,5 @@
 // Keeps the app working offline: serves saved copies first, refreshes them in the background.
-const CACHE = "mr-touchless-v1";
+const CACHE = "mr-touchless-v2";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icon-light-180.png", "icon-light-192.png", "icon-light-512.png", "icon-light-32.png", "icon-dark-32.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
